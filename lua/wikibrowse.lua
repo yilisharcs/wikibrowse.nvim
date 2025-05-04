@@ -54,15 +54,20 @@ M.wiki_open = function()
     state.floating = create_floating_window({ buf = state.floating.buf })
 
     -- Float win options
-    vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('filetype', 'markdown', { buf = state.floating.buf })
+    vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+    vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
 
     local on_exit = function(obj)
       vim.schedule(function()
         if obj.code == 0 and obj.stdout then
           local lines = vim.split(obj.stdout, '\n', { trimempty = true })
+
+          -- Set modifiable to edit buffer contents, then reset nomodifiable
+          vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
           vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
+          vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
         else
           local error_msg = obj.stderr or ("Exited with code: " .. obj.code)
           vim.notify(error_msg, vim.log.levels.ERROR)
@@ -70,15 +75,8 @@ M.wiki_open = function()
       end)
     end
 
-    local nu_query = {
-      'ls', '**/*'
-      -- 'http get https://en.wikipedia.org/wiki/Printing_press',
-    }
-
     vim.system({
-      'nu',
-      '-c',
-      table.concat(nu_query, ' '),
+      '/home/yilisharcs/projects/nvim/wikibrowse.nvim/scripts/wiki-search.nu',
     }, { text = true }, on_exit)
   else
     vim.api.nvim_win_hide(state.floating.win)
@@ -98,7 +96,7 @@ M.wiki_open = function()
   end, { buffer = state.floating.buf })
 end
 
-vim.keymap.set({ 'n', 't' }, '<leader>y', function()
+vim.keymap.set('n', '<leader>y', function()
   require('wikibrowse').wiki_open()
 end)
 
