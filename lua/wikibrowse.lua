@@ -52,10 +52,11 @@ local state = {
 M.wiki_open = function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window({ buf = state.floating.buf })
-    if vim.bo[state.floating.buf].buftype ~= 'terminal' then
-      -- vim.cmd.terminal()
-      -- vim.api.nvim_buf_set_name(state.floating.buf, 'Scratch')
-    end
+
+    -- Float win options
+    vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
+    vim.api.nvim_set_option_value('filetype', 'markdown', { buf = state.floating.buf })
+    vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
 
     local on_exit = function(obj)
       vim.schedule(function()
@@ -69,11 +70,15 @@ M.wiki_open = function()
       end)
     end
 
+    local nu_query = {
+      'ls', '**/*'
+      -- 'http get https://en.wikipedia.org/wiki/Printing_press',
+    }
+
     vim.system({
       'nu',
       '-c',
-      'ls **/*',
-      -- 'http get https://en.wikipedia.org/wiki/Printing_press',
+      table.concat(nu_query, ' '),
     }, { text = true }, on_exit)
   else
     vim.api.nvim_win_hide(state.floating.win)
