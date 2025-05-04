@@ -69,14 +69,16 @@ M.wiki_open = function()
           vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
           vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
         else
-          local error_msg = obj.stderr or ("Exited with code: " .. obj.code)
+          local error_msg = obj.stderr or ('Exited with code: ' .. obj.code)
           vim.notify(error_msg, vim.log.levels.ERROR)
         end
       end)
     end
 
     vim.system({
-      '/home/yilisharcs/projects/nvim/wikibrowse.nvim/scripts/wiki-search.nu',
+      -- TODO: surely there is a better way to get the script path?
+      vim.env.HOME .. '/projects/nvim/wikibrowse.nvim/scripts/wiki-search.nu',
+      'pizza',
     }, { text = true }, on_exit)
   else
     vim.api.nvim_win_hide(state.floating.win)
