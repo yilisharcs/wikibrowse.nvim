@@ -54,6 +54,9 @@ M.wiki_open = function()
     state.floating = create_floating_window({ buf = state.floating.buf })
 
     -- Float win options
+    vim.api.nvim_set_option_value('cursorline', true, { win = state.floating.win })
+    vim.api.nvim_set_option_value('winhighlight', 'CursorLine:Todo', { win = state.floating.win })
+
     vim.api.nvim_set_option_value('filetype', 'markdown', { buf = state.floating.buf })
     vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
