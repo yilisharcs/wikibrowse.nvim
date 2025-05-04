@@ -62,12 +62,29 @@ M.wiki_open = function()
     local on_exit = function(obj)
       vim.schedule(function()
         if obj.code == 0 and obj.stdout then
-          local lines = vim.split(obj.stdout, '\n', { trimempty = true })
+          -- local lines = vim.split(obj.stdout, '\n', { trimempty = true })
+          local decoded_json = vim.json.decode(obj.stdout)
 
-          -- Set modifiable to edit buffer contents, then reset nomodifiable
-          vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
-          vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
-          vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+          if decoded_json then
+            local lines = {}
+            table.insert(lines, '# Search Results:')
+            table.insert(lines, '')
+            for _, item in ipairs(decoded_json) do
+              if item.title and item.extract and item.fullurl then
+                table.insert(lines, '## **' .. item.title .. '**')
+                table.insert(lines, item.extract .. '...')
+                table.insert(lines, '[Full Article](' .. item.fullurl .. ')')
+                table.insert(lines, '')
+              end
+            end
+
+            -- Set modifiable to edit buffer contents, then reset nomodifiable
+            vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
+            vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
+            vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+          else
+            vim.notify('Failed to decode JSON', vim.log.levels.ERROR)
+          end
         else
           local error_msg = obj.stderr or ('Exited with code: ' .. obj.code)
           vim.notify(error_msg, vim.log.levels.ERROR)
@@ -84,15 +101,11 @@ M.wiki_open = function()
     vim.api.nvim_win_hide(state.floating.win)
   end
 
-  -- local current_slide = 1
-  -- vim.keymap.set('n', 'n', function()
-  --   current_slide = math.min(current_slide + 1, #parsed.slides)
-  --   vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, parsed.slides[current_slide])
-  -- end, { buffer = state.floating.buf })
-  -- vim.keymap.set('n', 'p', function()
-  --   current_slide = math.max(current_slide - 1, 1)
-  --   vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, parsed.slides[current_slide])
-  -- end, { buffer = state.floating.buf })
+  -- Overwrite wrap keymaps if any
+  vim.keymap.set('n', 'j', 'j', { buffer = state.floating.buf })
+  vim.keymap.set('n', 'k', 'k', { buffer = state.floating.buf })
+
+  -- Easy quit
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_win_close(state.floating.win, true)
   end, { buffer = state.floating.buf })
