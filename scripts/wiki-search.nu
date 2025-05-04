@@ -13,15 +13,14 @@ let api = ([
   '&redirects',
 ] | str join)
 
-# def main [x: string] {
-def main [] {
-  let x = 'pizza'
-
+def main [x: string] {
   let query = ($x | url encode)
 
   http get $"($api)&gsrsearch=($query)"
   | flatten
   | get pages
-  # | sort-by
-  # | to json
+  | values
+  | flatten
+  | sort-by index
+  | to json
 }
