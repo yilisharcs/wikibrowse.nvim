@@ -49,7 +49,7 @@ local state = {
   }
 }
 
-M.wiki_search = function()
+M.wiki_open = function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window({ buf = state.floating.buf })
     if vim.bo[state.floating.buf].buftype ~= 'terminal' then
@@ -94,7 +94,7 @@ M.wiki_search = function()
 end
 
 vim.keymap.set({ 'n', 't' }, '<leader>y', function()
-  require('wikibrowse').wiki_search()
+  require('wikibrowse').wiki_open()
 end)
 
 return M
