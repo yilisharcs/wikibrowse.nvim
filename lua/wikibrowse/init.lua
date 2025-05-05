@@ -125,10 +125,6 @@ M.wiki_search = function(query)
                 vim.api.nvim_win_set_cursor(0, { prev_result_line, 0 })
               end
             end, { buffer = state.floating.buf, silent = true })
-
-            vim.keymap.set('n', 'q', function()
-              vim.api.nvim_win_close(state.floating.win, true)
-            end, { buffer = state.floating.buf })
           else
             vim.notify('Failed to decode JSON', vim.log.levels.ERROR)
           end
