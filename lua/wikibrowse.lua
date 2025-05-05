@@ -70,14 +70,16 @@ M.wiki_open = function()
 
           if decoded_json then
             local lines = {}
+            local result_lines = {} -- Keep track of lines with search results
             table.insert(lines, '# Search Results:')
             table.insert(lines, '')
             for _, item in ipairs(decoded_json) do
-              if item.title and item.extract and item.fullurl then
-                table.insert(lines, '## **' .. item.title .. '**')
+              if item and item.title and item.extract and item.fullurl then
+                -- table.insert(lines, '**[' .. item.title .. '](' .. item.fullurl .. ')**')
+                table.insert(lines, '## **' .. item.title .. '** — ' .. item.fullurl)
                 table.insert(lines, item.extract .. '...')
-                table.insert(lines, '[Full Article](' .. item.fullurl .. ')')
                 table.insert(lines, '')
+                table.insert(result_lines, #lines - 2)
               end
             end
 
@@ -85,6 +87,41 @@ M.wiki_open = function()
             vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
             vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
             vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+
+            -- Buffer-local keymaps for restricted movement
+            vim.keymap.set('n', 'j', function()
+              local current_line = vim.api.nvim_win_get_cursor(0)[1]
+              local next_result_line = nil
+              for _, line_nr in ipairs(result_lines) do
+                if line_nr > current_line then
+                  next_result_line = line_nr
+                  break
+                end
+              end
+              if next_result_line then
+                vim.api.nvim_win_set_cursor(0, { next_result_line, 0 })
+              end
+            end, { buffer = state.floating.buf, silent = true })
+
+            vim.keymap.set('n', 'k', function()
+              local current_line = vim.api.nvim_win_get_cursor(0)[1]
+              local prev_result_line = nil
+              for i = #result_lines, 1, -1 do
+                local line_nr = result_lines[i]
+                if line_nr < current_line then
+                  prev_result_line = line_nr
+                  break
+                end
+              end
+              if prev_result_line then
+                vim.api.nvim_win_set_cursor(0, { prev_result_line, 0 })
+              end
+            end, { buffer = state.floating.buf, silent = true })
+
+            -- Easy quit
+            vim.keymap.set('n', 'q', function()
+              vim.api.nvim_win_close(state.floating.win, true)
+            end, { buffer = state.floating.buf })
           else
             vim.notify('Failed to decode JSON', vim.log.levels.ERROR)
           end
@@ -104,14 +141,9 @@ M.wiki_open = function()
     vim.api.nvim_win_hide(state.floating.win)
   end
 
-  -- Overwrite wrap keymaps if any
-  vim.keymap.set('n', 'j', 'j', { buffer = state.floating.buf })
-  vim.keymap.set('n', 'k', 'k', { buffer = state.floating.buf })
-
-  -- Easy quit
-  vim.keymap.set('n', 'q', function()
-    vim.api.nvim_win_close(state.floating.win, true)
-  end, { buffer = state.floating.buf })
+  -- -- Overwrite wrap keymaps if any
+  -- vim.keymap.set('n', 'j', 'j', { buffer = state.floating.buf })
+  -- vim.keymap.set('n', 'k', 'k', { buffer = state.floating.buf })
 end
 
 vim.keymap.set('n', '<leader>y', function()
