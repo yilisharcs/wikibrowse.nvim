@@ -61,9 +61,6 @@ M.wiki_open = function()
     vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
-    vim.api.nvim_set_option_value('concealcursor', 'nc', { win = state.floating.win })
-    vim.api.nvim_set_option_value('conceallevel', 3, { win = state.floating.win })
-    vim.api.nvim_set_option_value('syntax', 'wikibrowse', { buf = state.floating.buf })
 
     local on_exit = function(obj)
       vim.schedule(function()
@@ -77,7 +74,6 @@ M.wiki_open = function()
             table.insert(lines, '')
             for _, item in ipairs(decoded_json) do
               if item and item.title and item.extract and item.fullurl then
-                -- table.insert(lines, '**[' .. item.title .. '](' .. item.fullurl .. ')**')
                 table.insert(lines, '## **' .. item.title .. '** — ' .. item.fullurl)
                 table.insert(lines, item.extract .. '...')
                 table.insert(lines, '')
