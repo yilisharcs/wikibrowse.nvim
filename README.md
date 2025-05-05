@@ -19,3 +19,5 @@ Browse wikipedia articles from the comfort of your favorite editor.
 - [ ] use non-floating buffers
 - [x] implement get article
 - [ ] config opts and keymaps
+- [ ] search window if <args> is empty
+- [ ] refresh window rather than close it if a query is made while the window is open
