@@ -28,18 +28,7 @@ M.wiki_search = function(query)
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = win.create_floating_window({ buf = state.floating.buf })
 
-    -- Float win options
-    vim.api.nvim_set_option_value('cursorline', true, { win = state.floating.win })
-    vim.api.nvim_set_option_value('winhighlight', 'CursorLine:Todo', { win = state.floating.win })
-
-    vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
-    vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
-    vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
-    vim.api.nvim_set_option_value('linebreak', true, { win = state.floating.win })
-
     vim.api.nvim_set_option_value('filetype', 'wikibrowser', { buf = state.floating.buf })
-    vim.api.nvim_set_option_value('concealcursor', 'nc', { win = state.floating.win })
-    vim.api.nvim_set_option_value('conceallevel', 3, { win = state.floating.win })
 
     local on_exit = function(obj)
       vim.schedule(function()
