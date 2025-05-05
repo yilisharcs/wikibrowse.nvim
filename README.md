@@ -8,13 +8,9 @@ Browse wikipedia articles from the comfort of your favorite editor.
 
 # Usage
 
-```lua
-require('wikibrowse').wiki_open()
-
-require('wikibrowse').wiki_get()
+```vim
+:Wikibrowse <args>
 ```
-
-Currently is mapped by default to `<leader>y` and `<CR>`.
 
 # TODO
 

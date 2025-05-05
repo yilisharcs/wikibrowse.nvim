@@ -1,7 +1,13 @@
 local M = {}
 
 M.setup = function()
-  -- tumbleweed
+  vim.api.nvim_create_user_command('WikiBrowse', function(opts)
+    if opts.args == '' then
+      print('Please provide a query.')
+    else
+      M.wiki_search(opts.args)
+    end
+  end, { nargs = '*' })
 end
 
 local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
