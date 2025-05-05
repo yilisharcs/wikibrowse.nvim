@@ -1,21 +1,20 @@
 local win = require('wikibrowse.wm')
+local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
+local root = vim.fn.fnamemodify(plugin, ":h:h")
+local sh_search = root .. '/scripts/wiki-search.nu'
+local sh_enter = root .. '/scripts/wiki-enter.nu'
 
 local M = {}
 
 M.setup = function()
   vim.api.nvim_create_user_command('WikiBrowse', function(opts)
-    if opts.args == '' then
-      print('Please provide a query.')
-    else
+    if opts.args ~= '' then
       M.wiki_search(opts.args)
+    else
+      print('Please provide a query.')
     end
   end, { nargs = '*' })
 end
-
-local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
-local root = vim.fn.fnamemodify(plugin, ":h:h")
-local sh_search = root .. '/scripts/wiki-search.nu'
-local sh_enter = root .. '/scripts/wiki-enter.nu'
 
 local state = {
   floating = {
