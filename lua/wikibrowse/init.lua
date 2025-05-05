@@ -64,6 +64,8 @@ M.wiki_search = function(query)
             vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
             vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
             vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+
+            vim.api.nvim_win_set_cursor(0, { 3, 0 })
           else
             vim.notify('Failed to decode JSON', vim.log.levels.ERROR)
           end
