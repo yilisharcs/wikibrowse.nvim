@@ -3,7 +3,7 @@
 let api = ([
   'https://en.wikipedia.org/w/api.php?action=query',
   '&format=json',
-  '&prop=extracts|info',
+  '&prop=extracts|info|langlinks',
   '&generator=search',
   '&inprop=url',
   '&exsentences=1',
@@ -22,6 +22,6 @@ def main [x: string] {
   | values
   | flatten
   | sort-by index
-  | select pageid title index extract fullurl
+  | select -i pageid title index extract fullurl langlinks
   | to json
 }
