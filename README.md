@@ -18,7 +18,7 @@ Currently is mapped by default to `<leader>y` and `<CR>`.
 
 # TODO
 
-- [ ] un-hardcode pizza as query
+- [x] un-hardcode pizza as query
 - [x] fix the script path
 - [ ] use non-floating buffers
 - [x] implement get article

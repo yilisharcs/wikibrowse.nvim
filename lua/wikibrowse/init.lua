@@ -6,8 +6,8 @@ end
 
 local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
 local root = vim.fn.fnamemodify(plugin, ":h:h")
-local wiki_search = root .. '/scripts/wiki-search.nu'
-local wiki_get = root .. '/scripts/wiki-get.nu'
+local sh_search = root .. '/scripts/wiki-search.nu'
+local sh_enter = root .. '/scripts/wiki-enter.nu'
 
 local function create_floating_window(opts)
   opts = opts or {}
@@ -50,7 +50,7 @@ local state = {
   }
 }
 
-M.wiki_open = function()
+M.wiki_search = function(query)
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window({ buf = state.floating.buf })
 
@@ -134,15 +134,15 @@ M.wiki_open = function()
     end
 
     vim.system({
-      wiki_search,
-      'pizza',
+      sh_search,
+      query,
     }, { text = true }, on_exit)
   else
     vim.api.nvim_win_hide(state.floating.win)
   end
 end
 
-M.wiki_get = function()
+M.wiki_enter = function()
   local current_line = vim.api.nvim_win_get_cursor(0)[1]
   local index = vim.api.nvim_buf_get_lines(state.floating.buf, current_line - 1, current_line, false)[1]
 
@@ -169,7 +169,7 @@ M.wiki_get = function()
       end)
     end
     vim.system({
-      wiki_get,
+      sh_enter,
       pageid,
     }, { text = true }, on_content_exit)
   else
@@ -177,12 +177,12 @@ M.wiki_get = function()
   end
 end
 
-vim.keymap.set('n', '<leader>y', function()
-  require('wikibrowse').wiki_open()
-end)
+-- vim.keymap.set('n', '<leader>y', function()
+--   require('wikibrowse').wiki_search('pizza')
+-- end)
 
 vim.keymap.set('n', '<CR>', function()
-  require('wikibrowse').wiki_get()
+  require('wikibrowse').wiki_enter()
 end, { buffer = state.floating.buf })
 
 return M
