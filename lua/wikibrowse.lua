@@ -88,7 +88,6 @@ M.wiki_open = function()
             vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, lines)
             vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
 
-            -- Buffer-local keymaps for restricted movement
             vim.keymap.set('n', 'j', function()
               local current_line = vim.api.nvim_win_get_cursor(0)[1]
               local next_result_line = nil
@@ -118,7 +117,6 @@ M.wiki_open = function()
               end
             end, { buffer = state.floating.buf, silent = true })
 
-            -- Easy quit
             vim.keymap.set('n', 'q', function()
               vim.api.nvim_win_close(state.floating.win, true)
             end, { buffer = state.floating.buf })
