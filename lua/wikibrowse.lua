@@ -1,11 +1,7 @@
 local M = {}
 
 M.setup = function()
-  -- vim.api.nvim_create_user_command(
-  --   'WikiBrowse',
-  --   'lua WikiBrowse()',
-  --   {}
-  -- )
+  -- tumbleweed
 end
 
 local function create_floating_window(opts)
@@ -74,9 +70,7 @@ M.wiki_open = function()
             table.insert(lines, '')
             for _, item in ipairs(decoded_json) do
               if item and item.title and item.extract and item.fullurl then
-                -- table.insert(lines, '**[' .. item.title .. '](' .. item.fullurl .. ')**')
-                -- table.insert(lines, '## **' .. item.title .. '** — ' .. item.fullurl)
-                table.insert(lines, '## ' .. item.title)
+                table.insert(lines, '## ' .. item.title .. ' — pageid:' .. item.pageid)
                 table.insert(lines, item.extract .. '...')
                 table.insert(lines, '')
                 table.insert(result_lines, #lines - 2)
@@ -140,8 +134,47 @@ M.wiki_open = function()
   end
 end
 
+M.wiki_get = function()
+  local current_line = vim.api.nvim_win_get_cursor(0)[1]
+  local index = vim.api.nvim_buf_get_lines(state.floating.buf, current_line - 1, current_line, false)[1]
+
+  local pageid = string.match(index, 'pageid:(%d+)')
+
+  if pageid then
+    local on_content_exit = function(obj)
+      vim.schedule(function()
+        if obj.code == 0 and obj.stdout then
+          local content_lines = vim.split(obj.stdout, '\n', { trimempty = true })
+          vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
+          vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, content_lines)
+          vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+
+          vim.api.nvim_set_option_value('cursorline', false, { win = state.floating.win })
+          vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
+          -- Overwrite wrap keymaps if any
+          vim.keymap.set('n', 'j', 'gj', { buffer = state.floating.buf })
+          vim.keymap.set('n', 'k', 'gk', { buffer = state.floating.buf })
+        else
+          local error_msg = obj.stderr or ('Exited with code: ' .. obj.code)
+          vim.notify(error_msg, vim.log.levels.ERROR)
+        end
+      end)
+    end
+    vim.system({
+      vim.env.HOME .. '/projects/nvim/wikibrowse.nvim/scripts/wiki-get.nu',
+      pageid,
+    }, { text = true }, on_content_exit)
+  else
+    vim.notify('No Page ID found on this line.', vim.log.levels.WARN)
+  end
+end
+
 vim.keymap.set('n', '<leader>y', function()
   require('wikibrowse').wiki_open()
 end)
+
+vim.keymap.set('n', '<CR>', function()
+  require('wikibrowse').wiki_get()
+end, { buffer = state.floating.buf })
 
 return M
