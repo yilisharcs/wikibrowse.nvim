@@ -61,11 +61,13 @@ M.wiki_open = function()
     vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('swapfile', false, { buf = state.floating.buf })
     vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
+    vim.api.nvim_set_option_value('concealcursor', 'nc', { win = state.floating.win })
+    vim.api.nvim_set_option_value('conceallevel', 3, { win = state.floating.win })
+    vim.api.nvim_set_option_value('syntax', 'wikibrowse', { buf = state.floating.buf })
 
     local on_exit = function(obj)
       vim.schedule(function()
         if obj.code == 0 and obj.stdout then
-          -- local lines = vim.split(obj.stdout, '\n', { trimempty = true })
           local decoded_json = vim.json.decode(obj.stdout)
 
           if decoded_json then
