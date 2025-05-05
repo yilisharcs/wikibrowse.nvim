@@ -12,8 +12,11 @@ Browse wikipedia articles from the comfort of your favorite editor.
 require('wikibrowse').wiki_open()
 ```
 
+Currently is mapped by default to `<leader>y`.
+
 # TODO
 
-- [ ] use non-floating buffers
 - [ ] fix the script path
+- [ ] use non-floating buffers
 - [ ] implement get article
+- [ ] config opts and keymaps
