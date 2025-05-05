@@ -74,7 +74,9 @@ M.wiki_open = function()
             table.insert(lines, '')
             for _, item in ipairs(decoded_json) do
               if item and item.title and item.extract and item.fullurl then
-                table.insert(lines, '## **' .. item.title .. '** — ' .. item.fullurl)
+                -- table.insert(lines, '**[' .. item.title .. '](' .. item.fullurl .. ')**')
+                -- table.insert(lines, '## **' .. item.title .. '** — ' .. item.fullurl)
+                table.insert(lines, '## ' .. item.title)
                 table.insert(lines, item.extract .. '...')
                 table.insert(lines, '')
                 table.insert(result_lines, #lines - 2)
@@ -138,10 +140,6 @@ M.wiki_open = function()
   else
     vim.api.nvim_win_hide(state.floating.win)
   end
-
-  -- -- Overwrite wrap keymaps if any
-  -- vim.keymap.set('n', 'j', 'j', { buffer = state.floating.buf })
-  -- vim.keymap.set('n', 'k', 'k', { buffer = state.floating.buf })
 end
 
 vim.keymap.set('n', '<leader>y', function()
