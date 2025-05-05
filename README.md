@@ -23,3 +23,4 @@ Browse wikipedia articles from the comfort of your favorite editor.
 - [ ] search window if <args> is empty
 - [ ] refresh window rather than close it if a query is made while the window is open
 - [ ] handle disambiguation links
+- [ ] implement link follows
