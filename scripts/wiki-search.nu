@@ -22,7 +22,6 @@ def main [x: string] {
   | values
   | flatten
   | sort-by index
-  | reject ns contentmodel pagelanguage pagelanguagehtmlcode pagelanguagedir
-  | reject touched lastrevid length editurl canonicalurl
+  | select pageid title index extract fullurl
   | to json
 }
