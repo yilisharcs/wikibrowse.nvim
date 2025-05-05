@@ -19,7 +19,7 @@ Currently is mapped by default to `<leader>y` and `<CR>`.
 # TODO
 
 - [ ] un-hardcode pizza as query
-- [ ] fix the script path
+- [x] fix the script path
 - [ ] use non-floating buffers
-- [ ] implement get article
+- [x] implement get article
 - [ ] config opts and keymaps

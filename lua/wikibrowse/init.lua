@@ -4,6 +4,11 @@ M.setup = function()
   -- tumbleweed
 end
 
+local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
+local root = vim.fn.fnamemodify(plugin, ":h:h")
+local wiki_search = root .. '/scripts/wiki-search.nu'
+local wiki_get = root .. '/scripts/wiki-get.nu'
+
 local function create_floating_window(opts)
   opts = opts or {}
   local width = opts.width or math.floor(vim.o.columns * 0.9)
@@ -129,8 +134,7 @@ M.wiki_open = function()
     end
 
     vim.system({
-      -- TODO: surely there is a better way to get the script path?
-      vim.env.HOME .. '/projects/nvim/wikibrowse.nvim/scripts/wiki-search.nu',
+      wiki_search,
       'pizza',
     }, { text = true }, on_exit)
   else
@@ -165,7 +169,7 @@ M.wiki_get = function()
       end)
     end
     vim.system({
-      vim.env.HOME .. '/projects/nvim/wikibrowse.nvim/scripts/wiki-get.nu',
+      wiki_get,
       pageid,
     }, { text = true }, on_content_exit)
   else
