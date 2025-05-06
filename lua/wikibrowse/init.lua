@@ -41,7 +41,6 @@ M.wiki_search = function(query)
 
           if decoded_json then
             local lines = {}
-            local result_lines = {} -- Keep track of lines with search results
             table.insert(lines, '# Search Results:')
             table.insert(lines, '')
             for _, item in ipairs(decoded_json) do
@@ -49,7 +48,6 @@ M.wiki_search = function(query)
                 table.insert(lines, '@ ' .. item.title .. ' #pageid:' .. item.pageid)
                 table.insert(lines, item.extract .. '...')
                 table.insert(lines, '')
-                table.insert(result_lines, #lines - 2)
               end
             end
 
