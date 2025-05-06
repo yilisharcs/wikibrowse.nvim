@@ -22,5 +22,7 @@ Browse wikipedia articles from the comfort of your favorite editor.
 - [ ] change article language
 - [ ] search window if <args> is empty
 - [ ] refresh window rather than close it if a query is made while the window is open
-- [ ] handle disambiguation links
+- [ ] handle disambiguation links (contain "(disambiguation)" in fullurl)
 - [ ] implement link follows
+
+prepend en.wikipedia.org/wiki/ to all File:foobar.extension to access the image

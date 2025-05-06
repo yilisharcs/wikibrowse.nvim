@@ -4,6 +4,11 @@ local root = vim.fn.fnamemodify(plugin, ":h:h")
 local sh_search = root .. '/scripts/wiki-search.nu'
 local sh_enter = root .. '/scripts/wiki-enter.nu'
 
+-- local lang = {
+--   { 'en', 'english' },
+--   { 'pt', 'portuguese' },
+-- }
+
 local M = {}
 
 M.setup = function()
@@ -88,8 +93,9 @@ M.wiki_enter = function()
           vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, content_lines)
           vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
 
-          vim.api.nvim_set_option_value('cursorline', false, { win = state.floating.win })
-          vim.api.nvim_set_option_value('wrap', true, { win = state.floating.win })
+          vim.api.nvim_set_option_value('filetype', 'wikiarticle', { buf = state.floating.buf })
+          -- vim.api.nvim_set_option_value('filetype', 'markdown', { buf = state.floating.buf })
+
           -- Overwrite wrap keymaps if any
           vim.keymap.set('n', 'j', 'gj', { buffer = state.floating.buf })
           vim.keymap.set('n', 'k', 'gk', { buffer = state.floating.buf })
