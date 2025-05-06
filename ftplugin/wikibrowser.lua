@@ -3,13 +3,14 @@ vim.bo.swapfile = false
 
 vim.wo.cursorline = true
 vim.wo.winhighlight = 'CursorLine:Todo'
+
 vim.wo.wrap = true
 vim.wo.linebreak = true
+
 vim.wo.concealcursor = 'nc'
 vim.wo.conceallevel = 3
 
 local move = require('wikibrowse.index')
-
 local opts = { buffer = true }
 
 vim.keymap.set('n', 'j', function() move.cursor_jump('j') end, opts)
