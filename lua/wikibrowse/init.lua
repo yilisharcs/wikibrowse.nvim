@@ -107,6 +107,7 @@ M.wiki_enter = function()
   if string.match(index, 'pageid:(%d+)') then
     vim.system({
       sh_enter,
+      table.concat(lang),
       pageid,
     }, { text = true }, on_content_exit)
   else

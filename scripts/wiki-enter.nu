@@ -32,6 +32,6 @@ def main [lang: string, pageids: string] {
   # | flatten
   # | select title revisions.slots.main.*
   # | rename title extract
-  # | to text
-  # | tr -d '\000-\011\013\014\016-\037'
+  | to text
+  | tr -d '\000-\011\013\014\016-\037'
 }
