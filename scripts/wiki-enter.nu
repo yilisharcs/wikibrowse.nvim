@@ -1,23 +1,25 @@
 #!/usr/bin/env nu
 
-let api = ([
-  'https://en.wikipedia.org/w/api.php?action=query',
-  '&format=json',
-  '&prop=extracts',
-  '&explaintext',
-  '&exsectionformat=wiki'
+def main [lang: string, pageids: string] {
+  let url = ([
+    'https://',
+    $lang,
+    '.wikipedia.org/w/api.php?action=query',
+    '&format=json',
+    '&prop=extracts',
+    '&explaintext',
+    '&exsectionformat=wiki',
 
-  # '&prop=revisions',
-  # # '&prop=revisions|links',
-  # # '&prop=revisions|links|extlinks|images|imageinfo|iwlinks|videoinfo',
-  # '&rvprop=content',
-  # '&rvslots=main'
-] | str join)
+    # '&prop=revisions',
+    # # '&prop=revisions|links',
+    # # '&prop=revisions|links|extlinks|images|imageinfo|iwlinks|videoinfo',
+    # '&rvprop=content',
+    # '&rvslots=main',
+    '&pageids=',
+    $pageids
+  ] | str join)
 
-def main [x: string] {
-  let query = ($x | url encode)
-
-  http get $"($api)&pageids=($query)"
+  http get $url
   | flatten
   | get pages
   | flatten
@@ -30,6 +32,6 @@ def main [x: string] {
   # | flatten
   # | select title revisions.slots.main.*
   # | rename title extract
-  | to text
-  | tr -d '\000-\011\013\014\016-\037'
+  # | to text
+  # | tr -d '\000-\011\013\014\016-\037'
 }

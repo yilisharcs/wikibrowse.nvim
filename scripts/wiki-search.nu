@@ -1,22 +1,27 @@
 #!/usr/bin/env nu
 
-let api = ([
-  'https://en.wikipedia.org/w/api.php?action=query',
-  '&format=json',
-  '&prop=extracts|info|langlinks',
-  '&generator=search',
-  '&inprop=url',
-  '&exsentences=1',
-  '&exlimit=max',
-  '&exintro',
-  '&explaintext',
-  '&redirects',
-] | str join)
+def main [lang: string, ...str: string] {
+  let args = ($str | str join ' ')
+  let query = ($args | url encode)
 
-def main [x: string] {
-  let query = ($x | url encode)
+  let url = ([
+    'https://',
+    $lang,
+    '.wikipedia.org/w/api.php?action=query',
+    '&format=json',
+    '&prop=extracts|info|langlinks',
+    '&generator=search',
+    '&inprop=url',
+    '&exsentences=1',
+    '&exlimit=max',
+    '&exintro',
+    '&explaintext',
+    '&redirects',
+    '&gsrsearch=',
+    $query
+  ] | str join)
 
-  http get $"($api)&gsrsearch=($query)"
+  http get $url
   | flatten
   | get pages
   | values

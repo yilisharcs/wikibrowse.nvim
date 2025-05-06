@@ -4,10 +4,10 @@ local root = vim.fn.fnamemodify(plugin, ":h:h")
 local sh_search = root .. '/scripts/wiki-search.nu'
 local sh_enter = root .. '/scripts/wiki-enter.nu'
 
--- local lang = {
---   { 'en', 'english' },
---   { 'pt', 'portuguese' },
--- }
+-- TODO: expose this as a config option
+local lang = {
+  'pt'
+}
 
 local M = {}
 
@@ -71,6 +71,7 @@ M.wiki_search = function(query)
 
     vim.system({
       sh_search,
+      table.concat(lang),
       query,
     }, { text = true }, on_exit)
   else
