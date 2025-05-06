@@ -16,13 +16,12 @@ Browse wikipedia articles from the comfort of your favorite editor.
 
 - [x] un-hardcode pizza as query
 - [x] fix the script path
-- [ ] use non-floating buffers
+- [x] use non-floating buffer for article
 - [x] implement get article
 - [ ] config opts and keymaps (lang opts)
 - [ ] change article language
-- [ ] search window if <args> is empty
 - [ ] refresh window rather than close it if a query is made while the window is open
 - [ ] handle disambiguation links (contain "(disambiguation)" in fullurl)
 - [ ] implement link follows
-
-prepend en.wikipedia.org/wiki/ to all File:foobar.extension to access the image
+- [ ] pass json title object to wiki_enter to name the window
+- [ ] prepend en.wikipedia.org/wiki/ to all File:foobar.extension to access the image
