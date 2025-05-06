@@ -23,7 +23,7 @@ def main [lang: string, pageids: string] {
   | flatten
   | get pages
   | flatten
-  | get extract
+  # | get extract
   # | select pageid ns title revisions links extlinks images iwlinks
   # | reject pageid ns title revisions
   # | reject pageid ns revisions.slots.main.*
@@ -32,6 +32,6 @@ def main [lang: string, pageids: string] {
   # | flatten
   # | select title revisions.slots.main.*
   # | rename title extract
-  | to text
-  | tr -d '\000-\011\013\014\016-\037'
+  | to json
+  | tr -d '\000-\011\013\014\016-\037' # Why is this here
 }

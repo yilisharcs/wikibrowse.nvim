@@ -37,13 +37,13 @@ M.wiki_search = function(query)
     local on_exit = function(obj)
       vim.schedule(function()
         if obj.code == 0 and obj.stdout then
-          local decoded_json = vim.json.decode(obj.stdout)
+          local json_results = vim.json.decode(obj.stdout)
 
-          if decoded_json then
+          if json_results then
             local lines = {}
             table.insert(lines, '# Search Results:')
             table.insert(lines, '')
-            for _, item in ipairs(decoded_json) do
+            for _, item in ipairs(json_results) do
               if item and item.title and item.extract and item.fullurl then
                 table.insert(lines, '@ ' .. item.title .. ' #pageid:' .. item.pageid)
                 table.insert(lines, item.extract .. '...')
@@ -85,7 +85,17 @@ M.wiki_enter = function()
   local on_content_exit = function(obj)
     vim.schedule(function()
       if obj.code == 0 and obj.stdout then
-        local buf = win.create_article_buffer()
+        local buf = nil
+
+        local json_article = vim.json.decode(obj.stdout)
+        if json_article then
+          for _, item in ipairs(json_article) do
+            if item and item.title then
+              buf = win.create_article_buffer(item.title)
+            end
+          end
+          return
+        end
 
         local content_lines = vim.split(obj.stdout, '\n', { trimempty = true })
         vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
