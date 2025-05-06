@@ -82,16 +82,19 @@ M.wiki_enter = function()
   local current_line = vim.api.nvim_win_get_cursor(0)[1]
   local index = vim.api.nvim_buf_get_lines(state.floating.buf, current_line - 1, current_line, false)[1]
 
+  vim.api.nvim_win_close(0, true)
   local on_content_exit = function(obj)
     vim.schedule(function()
       if obj.code == 0 and obj.stdout then
-        local content_lines = vim.split(obj.stdout, '\n', { trimempty = true })
-        vim.api.nvim_set_option_value('modifiable', true, { buf = state.floating.buf })
-        vim.api.nvim_buf_set_lines(state.floating.buf, 0, -1, false, content_lines)
-        vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
+        local buf = win.create_article_buffer()
 
-        vim.api.nvim_set_option_value('filetype', 'wikiarticle', { buf = state.floating.buf })
-        -- vim.api.nvim_set_option_value('filetype', 'markdown', { buf = state.floating.buf })
+        local content_lines = vim.split(obj.stdout, '\n', { trimempty = true })
+        vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, content_lines)
+        vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
+
+        vim.api.nvim_set_option_value('filetype', 'wikiarticle', { buf = buf })
+        -- vim.api.nvim_set_option_value('filetype', 'markdown', { buf = buf })
       else
         local error_msg = obj.stderr or ('Exited with code: ' .. obj.code)
         vim.notify(error_msg, vim.log.levels.ERROR)

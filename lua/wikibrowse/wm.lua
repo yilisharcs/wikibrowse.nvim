@@ -34,4 +34,15 @@ M.create_floating_window = function(opts)
   return { buf = buf, win = win }
 end
 
+M.create_article_buffer = function(title)
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_set_current_buf(buf)
+  vim.bo[buf].filetype = 'wikiarticle'
+
+  title = 'Wikipedia: ' .. (title or 'n/a')
+  vim.api.nvim_buf_set_name(buf, title)
+
+  return buf
+end
+
 return M

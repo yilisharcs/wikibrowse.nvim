@@ -12,3 +12,8 @@ vim.wo.linebreak = true
 
 vim.keymap.set({ 'n', 'x', 'o' }, 'j', "(&wrap ? 'gj' : 'j')", { expr = true, buffer = true })
 vim.keymap.set({ 'n', 'x', 'o' }, 'k', "(&wrap ? 'gk' : 'k')", { expr = true, buffer = true })
+
+vim.keymap.set('n', 'q', function()
+  vim.bo.buflisted = false
+  vim.api.nvim_buf_delete(0, { unload = true })
+end, { buffer = true })
