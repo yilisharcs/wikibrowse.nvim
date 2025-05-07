@@ -4,7 +4,8 @@ Browse wikipedia articles from the comfort of your favorite editor.
 
 # Requirements
 
-`nushell`
+- `nushell`
+- `pandoc`
 
 # Usage
 
@@ -25,3 +26,5 @@ Browse wikipedia articles from the comfort of your favorite editor.
 - [ ] implement link follows
 - [x] pass json title object to wiki_enter to name the window
 - [ ] prepend en.wikipedia.org/wiki/ to all File:foobar.extension to access the image
+- [ ] parse wiki text and convert to markdown
+- [ ] use folds for infoboxes and images(?)

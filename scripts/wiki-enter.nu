@@ -6,32 +6,20 @@ def main [lang: string, pageids: string] {
     $lang,
     '.wikipedia.org/w/api.php?action=query',
     '&format=json',
-    '&prop=extracts',
-    '&explaintext',
-    '&exsectionformat=wiki',
-
-    # '&prop=revisions',
-    # # '&prop=revisions|links',
-    # # '&prop=revisions|links|extlinks|images|imageinfo|iwlinks|videoinfo',
-    # '&rvprop=content',
-    # '&rvslots=main',
+    '&prop=revisions',
+    '&rvprop=content',
+    '&rvslots=main',
     '&pageids=',
     $pageids
   ] | str join)
 
   http get $url
+  | get query.pages
   | flatten
-  | get pages
-  | flatten
-  # | get extract
-  # | select pageid ns title revisions links extlinks images iwlinks
-  # | reject pageid ns title revisions
-  # | reject pageid ns revisions.slots.main.*
-  # | get query
-  # | flatten
-  # | flatten
-  # | select title revisions.slots.main.*
-  # | rename title extract
-  | to json
+  | select title revisions.slots.main.*
+  | rename title extract
+  | get extract
+  | to text
+  | pandoc --from mediawiki --to markdown_phpextra
   | tr -d '\000-\011\013\014\016-\037' # Why is this here
 }
