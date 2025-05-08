@@ -2,17 +2,33 @@
 
 def parser [] {
   $in
-  | str replace -r 'title: (.*)' "# $1\n"                           # strip title tag (needs \n to counter 3rd cmd)
-  | str replace -r 'extract: ' ''                                   # strip extract tag
-  | str replace -r -a "([^\n])(?!\n-)\n" '$1 '                      # join paragraphs into single lines (don't match lists)
-  | str replace -r -a "\n" "\n\n"                                   # separate paragraphs
-  | str replace -r -a '(##.*) {#.*}' '$1'                           # strip subheading tags
-  | str replace -r -a ' {2,}' ' '                                   # remove double-plus spaces
-  | str replace -r -a ' ,' ','                                      # fix spaced commas
-  | lines | str trim --right | to text                              # remove trailing whitespaces
-  # | str replace -r -a '(?<=<figure>)(.*)<em>([^<]*)</em>' '$1*$2*'  # emphasis with markdown tags
-  | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](https://en.wikipedia.org/wiki/File:$1)'
-  # | str replace -r -a '<figure>.*src="(\S*)".*<figcaption>(.*)</figcaption>.*' '![$2](https://en.wikipedia.org/wiki/File:$1)'
+  # strip title tag (needs \n to counter 3rd cmd)
+  | str replace -r 'title: (.*)' "# $1\n"
+  # strip extract tag
+  | str replace -r 'extract: ' ''
+  # join paragraphs into single lines (don't match lists)
+  | str replace -r -a "([^\n])(?!\n-)\n" '$1 '
+  # separate paragraphs
+  | str replace -r -a "\n" "\n\n"
+  # strip subheading tags
+  | str replace -r -a '(##.*) {#.*}' '$1'
+  # remove double-plus spaces
+  | str replace -r -a ' {2,}' ' '
+  # fix spaced commas
+  | str replace -r -a ' ,' ','
+  # parse images
+  | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](File:$1)'
+  # parse image tables with black magic PART 1
+  | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*?)' "$3\n<parse$1$2>"
+  # parse image tables with black magic PART 2
+  ## FIXME: I only need this second regex because the first one somehow eats the last tag
+  ## NOTE: This also makes an extra newline
+  | str replace -r -a '<parse([^>]+)>(.*)' "    $2 <$1>"
+  | lines
+  # remove trailing whitespaces
+  | str trim --right
+  # |
+  | to text
   | tr -d '\000-\011\013\014\016-\037'          # Why is this here
 }
 
