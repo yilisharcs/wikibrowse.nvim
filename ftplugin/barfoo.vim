@@ -1,3 +1,5 @@
-" runtime syntax/markdown.vim
-
 set syntax=barfoo
+
+set concealcursor=nvic
+set conceallevel=3
+set wrap
