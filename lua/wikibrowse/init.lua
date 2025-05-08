@@ -85,19 +85,26 @@ M.wiki_enter = function()
   local on_content_exit = function(obj)
     vim.schedule(function()
       if obj.code == 0 and obj.stdout then
-        local json_article = vim.json.decode(obj.stdout)
+        -- local json_article = vim.json.decode(obj.stdout)
+        --
+        -- if json_article then
+        -- local title = json_article[1].title
+        -- local buf = win.create_article_buffer(title)
 
-        if json_article then
-          local buf = win.create_article_buffer(json_article[1].title)
+        local content_lines = vim.split(obj.stdout, '\n', { trimempty = true })
+        local title = content_lines[1]:sub(3, -1) -- "# $title" notation
+        local buf = win.create_article_buffer(title)
 
-          local content_lines = vim.split(json_article[1].extract, '\n', { trimempty = true })
-          vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
-          vim.api.nvim_buf_set_lines(buf, 0, -1, false, content_lines)
-          vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
+        -- local content_lines = vim.split(json_article[1].extract, '\n', { trimempty = true })
+        vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, content_lines)
+        -- vim.api.nvim_buf_set_lines(buf, 0, 0, false, { title })
+        -- vim.api.nvim_buf_set_lines(buf, 1, 1, false, { '' })
+        vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
 
-          vim.api.nvim_set_option_value('filetype', 'wikiarticle', { buf = buf })
-          -- vim.api.nvim_set_option_value('filetype', 'markdown', { buf = buf })
-        end
+        vim.api.nvim_set_option_value('filetype', 'wikiarticle', { buf = buf })
+        -- vim.api.nvim_set_option_value('filetype', 'markdown', { buf = buf })
+        -- end
       else
         local error_msg = obj.stderr or ('Exited with code: ' .. obj.code)
         vim.notify(error_msg, vim.log.levels.ERROR)
