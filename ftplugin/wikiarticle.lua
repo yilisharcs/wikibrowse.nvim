@@ -1,14 +1,14 @@
-vim.bo.modifiable = false
+vim.bo.modifiable = true
 vim.bo.swapfile = false
 
 vim.wo.cursorline = false
 vim.wo.number = true
 
-vim.wo.wrap = true
+vim.wo.wrap = false
 vim.wo.linebreak = true
 
 vim.wo.concealcursor = 'nc'
-vim.wo.conceallevel = 3
+vim.wo.conceallevel = 0
 
 vim.bo.syntax = 'on'
 
