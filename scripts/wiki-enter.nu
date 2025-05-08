@@ -27,7 +27,6 @@ def parser [] {
   | lines
   # remove trailing whitespaces
   | str trim --right
-  # |
   | to text
   | tr -d '\000-\011\013\014\016-\037'          # Why is this here
 }

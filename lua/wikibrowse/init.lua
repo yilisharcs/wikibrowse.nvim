@@ -6,7 +6,7 @@ local sh_enter = root .. '/scripts/wiki-enter.nu'
 
 -- TODO: expose this as a config option
 local lang = {
-  'pt'
+  'en'
 }
 
 local M = {}
