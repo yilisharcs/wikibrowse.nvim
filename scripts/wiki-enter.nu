@@ -2,9 +2,9 @@
 
 def parser [] {
   $in
-  | str replace -r 'title: (.*)' "# $1\n"       # strip title tag (needs \n to counter 4th cmd)
+  | str replace -r 'title: (.*)' "# $1\n"       # strip title tag (needs \n to counter 3rd cmd)
   | str replace -r 'extract: ' ''               # strip extract tag
-  | str replace -r -a "([^\n])(?!\n-)\n" '$1 '  # join paragraphs into single lines
+  | str replace -r -a "([^\n])(?!\n-)\n" '$1 '  # join paragraphs into single lines (don't match lists)
   | str replace -r -a "\n" "\n\n"               # separate paragraphs
   | str replace -r -a '(##.*) {#.*}' '$1'       # strip subheading tags
   | str replace -r -a ' {2,}' ' '               # remove double-plus spaces
