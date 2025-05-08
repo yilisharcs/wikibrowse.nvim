@@ -8,6 +8,7 @@ def parser [] {
   | str replace -r -a "\n" "\n\n"               # separate paragraphs
   | str replace -r -a '(##.*) {#.*}' '$1'       # strip subheading tags
   | str replace -r -a ' {2,}' ' '               # remove double-plus spaces
+  | lines | str trim --right | to text          # remove trailing whitespaces
 }
 
 def main [lang: string, pageids: string] {
