@@ -12,13 +12,18 @@ local lang = {
 local M = {}
 
 M.setup = function()
+  if vim.fn.executable('nu') == 0 then
+    vim.notify('nushell not found.', vim.log.levels.ERROR)
+    return
+  end
+  if vim.fn.executable('pandoc') == 0 then
+    vim.notify('pandoc not found.', vim.log.levels.ERROR)
+    return
+  end
+
   vim.api.nvim_create_user_command('WikiBrowse', function(opts)
-    if opts.args ~= '' then
-      M.wiki_search(opts.args)
-    else
-      print('Please provide a query.')
-    end
-  end, { nargs = '*' })
+    M.wiki_search(opts.args)
+  end, { nargs = '+' })
 end
 
 local state = {
