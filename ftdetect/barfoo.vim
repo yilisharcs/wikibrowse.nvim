@@ -1,1 +1,1 @@
-au BufRead,BufNewFile *.barfoo set filetype=barfoo
+au BufRead,BufNewFile *.barfoo set filetype=wikiarticle
