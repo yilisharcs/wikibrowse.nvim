@@ -1,4 +1,4 @@
-local win = require('wikibrowse.wm')
+local win = require('wikibrowse.window')
 local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
 local root = vim.fn.fnamemodify(plugin, ":h:h")
 local sh_search = root .. '/scripts/wiki-search.nu'
