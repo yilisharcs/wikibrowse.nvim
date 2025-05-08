@@ -20,11 +20,12 @@ Browse wikipedia articles from the comfort of your favorite editor.
 - [x] use non-floating buffer for article
 - [x] implement get article
 - [ ] config opts and keymaps (lang opts)
-- [ ] change article language
+- [x] change article language
 - [ ] refresh window rather than close it if a query is made while the window is open
 - [ ] handle disambiguation links (contain "(disambiguation)" in fullurl)
 - [ ] implement link follows
 - [x] pass json title object to wiki_enter to name the window
 - [ ] prepend en.wikipedia.org/wiki/ to all File:foobar.extension to access the image
-- [ ] parse wiki text and convert to markdown
+- [x] parse wiki text and convert to markdown
 - [ ] use folds for infoboxes and images(?)
+- [ ] fix empty references, notes, citations
