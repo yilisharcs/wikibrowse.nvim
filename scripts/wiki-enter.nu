@@ -33,8 +33,8 @@ def parser [] {
   | str replace -r -a "\n\n\n" "\n\n"
   # remove excess newline at the end of file
   | str replace -r -a "\n$" ""
-  | lines | split list ""
   # parse image blocks
+  | lines | split list ""
   | each {
     if (
       $in.0 | str starts-with "<figure>") or (
