@@ -8,8 +8,6 @@ def parser [] {
   | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip subheading tags
   | each { str replace -r "(##.*) {#.*}" "$1" }
-  # strip wikilink markers
-  | each { str replace -r -m -a ' "wikilink"' '' }
   # join paragraphs into single lines
   | split list ""
   | each {
@@ -38,8 +36,11 @@ def parser [] {
   | each {
     if (
       $in.0 | str starts-with "<figure>") or (
-      $in.0 | str starts-with "<File:"
+      $in.0 | str starts-with "<table>"
     ) {
+      str join "\n"
+      | pandoc --from html --to markdown
+    } else if ($in.0 | str starts-with "<File:") {
       str join " "
     } else {
       return $in
@@ -50,11 +51,13 @@ def parser [] {
   # parse images cont.
   | each {
     $in
-    | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' "![$2](File:$1)"
+    # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' "![$2](File:$1)"
     # | str replace -r -a "%7C" '\|'
     | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
     | str replace -r -a "  <" " <"
   }
+  # strip wikilink markers
+  | each { str replace -r -m -a ' "wikilink"' '' }
   | to text
 
   # | lines
