@@ -60,6 +60,9 @@ M.wiki_search = function(query)
             vim.api.nvim_set_option_value('modifiable', false, { buf = state.floating.buf })
 
             vim.api.nvim_win_set_cursor(0, { 3, 0 })
+            vim.keymap.set('n', '<CR>', function()
+              require('wikibrowse').wiki_enter()
+            end, { buffer = state.floating.buf })
           else
             vim.notify('Failed to decode JSON', vim.log.levels.ERROR)
           end
@@ -127,9 +130,5 @@ M.wiki_enter = function()
     vim.notify('No Page ID found on this line.', vim.log.levels.WARN)
   end
 end
-
-vim.keymap.set('n', '<CR>', function()
-  require('wikibrowse').wiki_enter()
-end, { buffer = state.floating.buf })
 
 return M
