@@ -8,6 +8,8 @@ def parser [] {
   | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip subheading tags
   | each { str replace -r "(##.*) {#.*}" "$1" }
+  # strip wikilink markers
+  | each { str replace -r -m -a ' "wikilink"' '' }
   # join paragraphs into single lines
   | split list ""
   | each {
@@ -82,7 +84,6 @@ def main [lang: string, pageids: string] {
     $in
     | to text
     | pandoc --from mediawiki --to markdown_phpextra
-    | str replace --regex --multiline --all ' "wikilink"' ''
   }
   | to text
   | parser
