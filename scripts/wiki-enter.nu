@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 
 def parser [] {
-  lines
+  to text | lines
   # strip extract tag
   | update 1 { str replace "extract: " "" }
   # strip title tag
@@ -56,9 +56,11 @@ def parser [] {
     # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' "![$2](File:$1)"
     # | str replace -r -a "%7C" '\|'
     | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
+    # | str replace -r -a '<File:([^>]+)>'
     | str replace -a "  <" " <"
   }
-  | to text
+  | table
+  # | to text
 
   # | lines
   # | to text
@@ -88,7 +90,7 @@ def parser [] {
 #     | to text
 #     | pandoc --from mediawiki --to markdown_phpextra
 #   }
-#   # | parser
+#   | parser
 # }
 
 def main [] {
@@ -96,6 +98,5 @@ def main [] {
 
   open pandoc.nuon
   | parser
-  | table
   | save -f output.barfoo
 }
