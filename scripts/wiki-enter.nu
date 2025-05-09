@@ -23,6 +23,12 @@ def parser [] {
   }
   # add newlines
   | each { append "" } | flatten
+  # join lists into single lines
+  | to text | str replace -r -a "\n    " " "
+  # separate lists
+  | str replace -r -a "(-   .*)" "$1\n"
+  # remove excess newlines from previous command
+  | str replace -r -a "\n\n\n" "\n\n"
 
 
   # | each {
