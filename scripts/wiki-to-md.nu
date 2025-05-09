@@ -110,10 +110,18 @@ def main [
   | parse-article
 }
 
-def "main test" [] {
+# dev func for api testing
+def "main api" [] {
+  get-article en 24768
+  | to nuon
+  | save -f pandoc.nuon
+}
+
+# dev func for post-processing
+def "main parser" [] {
   $env.config = ($env.config | update use_ansi_coloring false)
 
   open pandoc.nuon
-  | parser
+  | parse-article
   | save -f output.barfoo
 }
