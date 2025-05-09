@@ -31,7 +31,21 @@ def parser [] {
   | str replace -r -a "\n\n\n" "\n\n"
   # remove excess newline at the end of file
   | str replace -r -a "\n$" ""
-
+  | lines | split list ""
+  # parse image blocks
+  | each {
+    if ($in.0 | str starts-with "<figure>") {
+      str join " "
+    } else {
+      return $in
+    }
+  }
+  # separate lines with newlines (again)
+  | each { append "" } | flatten
+  # parse images cont.
+  | each {
+    str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](File:$1)'
+  }
 
   # | each {
   #   # strip subheading tags
