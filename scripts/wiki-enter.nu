@@ -12,7 +12,7 @@ def parser [] {
   }
   # join paragraphs into single lines (don't match lists)
   | flatten
-  | split list ''
+  | split list ""
   # | each {|e|
   #   if not ($e | str starts-with '<')
   #     str join " "
