@@ -21,14 +21,16 @@ def parser [] {
       return $in
     }
   }
-  # add newlines
+  # separate lines with newlines
   | each { append "" } | flatten
   # join lists into single lines
   | to text | str replace -r -a "\n    " " "
-  # separate lists
+  # separate lists with newlines
   | str replace -r -a "(-   .*)" "$1\n"
   # remove excess newlines from previous command
   | str replace -r -a "\n\n\n" "\n\n"
+  # remove excess newline at the end of file
+  | str replace -r -a "\n$" ""
 
 
   # | each {
