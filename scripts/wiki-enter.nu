@@ -8,6 +8,8 @@ def parser [] {
   | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip subheading tags
   | each { str replace -r "(##.*) {#.*}" "$1" }
+  # strip wikilink markers
+  | each { str replace -r -m -a ' "wikilink"' '' }
   # join paragraphs into single lines
   | split list ""
   | each {
@@ -56,8 +58,6 @@ def parser [] {
     | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
     | str replace -r -a "  <" " <"
   }
-  # strip wikilink markers
-  | each { str replace -r -m -a ' "wikilink"' '' }
   | to text
 
   # | lines
@@ -78,16 +78,4 @@ def main [lang: string, pageids: string] {
     $pageids
   ] | str join)
 
-  http get $url
-  | get query.pages
-  | flatten
-  | select title revisions.slots.main.*
-  | rename title extract
-  | update extract {
-    $in
-    | to text
-    | pandoc --from mediawiki --to markdown_phpextra
-  }
-  | to text
-  | parser
-}
+def main [] { open pandoc.output | parser | save -f output.barfoo }
