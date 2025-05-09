@@ -8,15 +8,20 @@ def parser [] {
   | update 1 { str replace -r "extract: " "" }
   # strip subheading tags
   | each { str replace -r "(##.*) {#.*}" "$1" }
-  # join paragraphs into single lines (don't match lists)
+  # join paragraphs into single lines
   | split list ""
   | each {
-    if not ($in | str starts-with "<" | first) {
+    if not (
+      # ignore html tags
+      $in | str starts-with "<" | first) and not (
+      # ignore lists
+      $in | str starts-with "-   " | first) {
       str join " "
     } else {
       return $in
     }
   }
+  # add newlines
   | each { append "" } | flatten
 
 
