@@ -3,13 +3,11 @@
 def parser [] {
   lines
   # strip title tag
-  | update 0 { str replace -r "title: (.*)" "# $1" | append "" }
+  | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip extract tag
   | update 1 { str replace -r "extract: " "" }
-  | each {
-    # strip subheading tags
-    str replace -r -a "(##.*) {#.*}" "$1"
-  } | flatten
+  # strip subheading tags
+  | each { str replace -r "(##.*) {#.*}" "$1" }
   # join paragraphs into single lines (don't match lists)
   | split list ""
   | each {
