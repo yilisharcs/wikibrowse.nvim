@@ -2,10 +2,10 @@
 
 def parser [] {
   lines
-  # strip title tag
-  | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip extract tag
   | update 1 { str replace -r "extract: " "" }
+  # strip title tag
+  | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip subheading tags
   | each { str replace -r "(##.*) {#.*}" "$1" }
   # join paragraphs into single lines
