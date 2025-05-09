@@ -2,7 +2,7 @@ local win = require('wikibrowse.window')
 local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
 local root = vim.fn.fnamemodify(plugin, ":h:h")
 local sh_search = root .. '/scripts/wiki-search.nu'
-local sh_enter = root .. '/scripts/wiki-enter.nu'
+local sh_enter = root .. '/scripts/wiki-to-md.nu'
 
 -- TODO: expose this as a config option
 local lang = {
@@ -121,6 +121,7 @@ M.wiki_enter = function()
   if string.match(index, 'pageid:(%d+)') then
     vim.system({
       sh_enter,
+      '--lang',
       table.concat(lang),
       pageid,
     }, { text = true }, on_content_exit)

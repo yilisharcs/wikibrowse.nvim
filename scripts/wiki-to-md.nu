@@ -88,7 +88,7 @@ def parse-article [] {
     | str replace -a "  <" " <"
   }
   # | table
-  # | to text
+  | to text
 
 # | lines
 # | to text
