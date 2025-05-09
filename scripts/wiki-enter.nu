@@ -3,31 +3,44 @@
 def parser [] {
   lines
   # strip title tag
-  | update 0 { str replace -r 'title: (.*)' "# $1" | append "" }
+  | update 0 { str replace -r "title: (.*)" "# $1" | append "" }
   # strip extract tag
-  | update 1 { str replace -r 'extract: ' '' }
-  # # strip title tag (needs \n to counter 3rd cmd)
-  # | str replace -r 'title: (.*)' "# $1\n"
-  # # strip extract tag
-  # | str replace -r 'extract: ' ''
+  | update 1 { str replace -r "extract: " "" }
+  | each {
+    # strip subheading tags
+    str replace -r -a "(##.*) {#.*}" "$1"
+  }
+  # join paragraphs into single lines (don't match lists)
+  | flatten
+  | split list ''
+  # | each {|e|
+  #   if not ($e | str starts-with '<')
+  #     str join " "
+  # } | str join "\n\n"
+
+
+  # | each {
+  #   # strip subheading tags
+  #   | str replace -r -a '(##.*) {#.*}' '$1'
+  #   # # parse images
+  #   # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](File:$1)'
+  #   # # parse image tables with black magic PART 1
+  #   # | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*?)' "$3\n<parse$1$2>"
+  #   # # parse image tables with black magic PART 2
+  #   # ## FIXME: I only need this second regex because the first one somehow eats the last tag
+  #   # ## NOTE: This also makes an extra newline
+  #   # | str replace -r -a '<parse([^>]+)>(.*)' "    $2 <$1>"
+  # }
+  # | to text
+
   # # join paragraphs into single lines (don't match lists)
   # | str replace -r -a "([^\n])(?!\n-)\n" '$1 '
   # # separate paragraphs
   # | str replace -r -a "\n" "\n\n"
-  # # strip subheading tags
-  # | str replace -r -a '(##.*) {#.*}' '$1'
   # # remove double-plus spaces
   # | str replace -r -a ' {2,}' ' '
   # # fix spaced commas
   # | str replace -r -a ' ,' ','
-  # # parse images
-  # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](File:$1)'
-  # # parse image tables with black magic PART 1
-  # | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*?)' "$3\n<parse$1$2>"
-  # # parse image tables with black magic PART 2
-  # ## FIXME: I only need this second regex because the first one somehow eats the last tag
-  # ## NOTE: This also makes an extra newline
-  # | str replace -r -a '<parse([^>]+)>(.*)' "    $2 <$1>"
   # | lines
   # # remove trailing whitespaces
   # | str trim --right
