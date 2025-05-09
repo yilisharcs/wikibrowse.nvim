@@ -34,7 +34,10 @@ def parser [] {
   | lines | split list ""
   # parse image blocks
   | each {
-    if ($in.0 | str starts-with "<figure>") {
+    if (
+      $in.0 | str starts-with "<figure>") or (
+      $in.0 | str starts-with "<File:"
+    ) {
       str join " "
     } else {
       return $in
@@ -44,34 +47,15 @@ def parser [] {
   | each { append "" } | flatten
   # parse images cont.
   | each {
-    str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](File:$1)'
+    $in
+    | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' "![$2](File:$1)"
+    # | str replace -r -a "%7C" '\|'
+    | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
+    | str replace -r -a "  <" " <"
   }
+  | to text
 
-  # | each {
-  #   # strip subheading tags
-  #   | str replace -r -a '(##.*) {#.*}' '$1'
-  #   # # parse images
-  #   # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' '![$2](File:$1)'
-  #   # # parse image tables with black magic PART 1
-  #   # | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*?)' "$3\n<parse$1$2>"
-  #   # # parse image tables with black magic PART 2
-  #   # ## FIXME: I only need this second regex because the first one somehow eats the last tag
-  #   # ## NOTE: This also makes an extra newline
-  #   # | str replace -r -a '<parse([^>]+)>(.*)' "    $2 <$1>"
-  # }
-  # | to text
-
-  # # join paragraphs into single lines (don't match lists)
-  # | str replace -r -a "([^\n])(?!\n-)\n" '$1 '
-  # # separate paragraphs
-  # | str replace -r -a "\n" "\n\n"
-  # # remove double-plus spaces
-  # | str replace -r -a ' {2,}' ' '
-  # # fix spaced commas
-  # | str replace -r -a ' ,' ','
   # | lines
-  # # remove trailing whitespaces
-  # | str trim --right
   # | to text
   # | tr -d '\000-\011\013\014\016-\037'          # Why is this here
 }
