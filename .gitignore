@@ -1,1 +1,3 @@
 **/*.bak
+pandoc.nuon
+output.barfoo

@@ -65,17 +65,37 @@ def parser [] {
   # | tr -d '\000-\011\013\014\016-\037'          # Why is this here
 }
 
-def main [lang: string, pageids: string] {
-  let url = ([
-    'https://',
-    $lang,
-    '.wikipedia.org/w/api.php?action=query',
-    '&format=json',
-    '&prop=revisions',
-    '&rvprop=content',
-    '&rvslots=main',
-    '&pageids=',
-    $pageids
-  ] | str join)
+# def main [lang: string, pageids: string] {
+#   let url = ([
+#     'https://',
+#     $lang,
+#     '.wikipedia.org/w/api.php?action=query',
+#     '&format=json',
+#     '&prop=revisions',
+#     '&rvprop=content',
+#     '&rvslots=main',
+#     '&pageids=',
+#     $pageids
+#   ] | str join)
+#
+#   http get $url
+#   | get query.pages
+#   | flatten
+#   | select title revisions.slots.main.*
+#   | rename title extract
+#   | update extract {
+#     $in
+#     | to text
+#     | pandoc --from mediawiki --to markdown_phpextra
+#   }
+#   # | parser
+# }
 
-def main [] { open pandoc.output | parser | save -f output.barfoo }
+def main [] {
+  $env.config = ($env.config | update use_ansi_coloring false)
+
+  open pandoc.nuon
+  | parser
+  | table
+  | save -f output.barfoo
+}
