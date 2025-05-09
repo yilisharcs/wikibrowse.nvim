@@ -9,14 +9,17 @@ def parser [] {
   | each {
     # strip subheading tags
     str replace -r -a "(##.*) {#.*}" "$1"
-  }
+  } | flatten
   # join paragraphs into single lines (don't match lists)
-  | flatten
   | split list ""
-  # | each {|e|
-  #   if not ($e | str starts-with '<')
-  #     str join " "
-  # } | str join "\n\n"
+  | each {
+    if not ($in | str starts-with "<" | first) {
+      str join " "
+    } else {
+      return $in
+    }
+  }
+  | each { append "" } | flatten
 
 
   # | each {
