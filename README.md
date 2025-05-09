@@ -13,6 +13,10 @@ Browse wikipedia articles from the comfort of your favorite editor.
 :Wikibrowse <args>
 ```
 
+# Disclaimer
+
+I tested this in English with the [Pizza](https://en.wikipedia.org/wiki/Pizza) article as the test subject. I can't guarantee that this will work with other languages, but I would like if it did. PRs welcome.
+
 # TODO
 
 - [x] un-hardcode pizza as query
