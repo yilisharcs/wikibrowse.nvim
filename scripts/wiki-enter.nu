@@ -3,13 +3,13 @@
 def parser [] {
   lines
   # strip extract tag
-  | update 1 { str replace -r "extract: " "" }
+  | update 1 { str replace "extract: " "" }
   # strip title tag
   | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
   # strip subheading tags
   | each { str replace -r "(##.*) {#.*}" "$1" }
   # strip wikilink markers
-  | each { str replace -r -m -a ' "wikilink"' '' }
+  | each { str replace -m -a ' "wikilink"' '' }
   # join paragraphs into single lines
   | split list ""
   | each {
@@ -26,11 +26,11 @@ def parser [] {
   # separate lines with newlines
   | each { append "" } | flatten
   # join lists into single lines
-  | to text | str replace -r -a "\n    " " "
+  | to text | str replace -a "\n    " " "
   # separate lists with newlines
   | str replace -r -a "(-   .*)" "$1\n"
   # remove excess newlines from previous command
-  | str replace -r -a "\n\n\n" "\n\n"
+  | str replace -a "\n\n\n" "\n\n"
   # remove excess newline at the end of file
   | str replace -r -a "\n$" ""
   # parse image blocks
@@ -56,7 +56,7 @@ def parser [] {
     # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' "![$2](File:$1)"
     # | str replace -r -a "%7C" '\|'
     | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
-    | str replace -r -a "  <" " <"
+    | str replace -a "  <" " <"
   }
   | to text
 
