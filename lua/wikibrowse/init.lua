@@ -5,9 +5,7 @@ local sh_search = root .. '/scripts/wiki-search.nu'
 local sh_enter = root .. '/scripts/wiki-to-md.nu'
 
 -- TODO: expose this as a config option
-local lang = {
-  'en'
-}
+local lang = 'en'
 
 local M = {}
 
@@ -74,7 +72,7 @@ M.wiki_search = function(query)
 
     vim.system({
       sh_search,
-      table.concat(lang),
+      lang,
       query,
     }, { text = true }, on_exit)
   else
@@ -122,7 +120,7 @@ M.wiki_enter = function()
     vim.system({
       sh_enter,
       '--lang',
-      table.concat(lang),
+      lang,
       pageid,
     }, { text = true }, on_content_exit)
   else
