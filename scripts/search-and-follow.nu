@@ -53,7 +53,6 @@ def get-article [opts: record] {
     | flatten
     | sort-by index
     | select -i pageid title index extract fullurl
-    | to json
   } else {
     get query.pages
     | flatten
@@ -63,7 +62,8 @@ def get-article [opts: record] {
 }
 
 def parse-article [--wrap] {
-  update extract {
+  flatten
+  | update extract {
     to text | pandoc --from mediawiki --to markdown_phpextra
   }
   | to text | lines
@@ -164,15 +164,16 @@ def "main api" [] {
     title: null
     search: null
   }
-  | to nuon
-  | save -f pandoc.nuon
+  | to json
+  | save -f pandoc.json
 }
 
 # dev func for post-processing
 def "main parser" [] {
   $env.config = ($env.config | update use_ansi_coloring false)
 
-  open pandoc.nuon
+  open pandoc.json
   | parse-article
+  | table -e
   | save -f output.barfoo
 }
