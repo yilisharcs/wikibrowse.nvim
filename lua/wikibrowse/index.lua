@@ -1,6 +1,6 @@
 local M = {}
 
-M.get_article_index = function()
+local get_article_index = function()
   local articles_prev = {}
   local articles_next = {}
 
@@ -23,7 +23,7 @@ end
 
 M.cursor_jump = function(key)
   local cursor = vim.api.nvim_win_get_cursor(0)[1] -- get line, ignore row
-  local index = M.get_article_index()
+  local index = get_article_index()
   local prev, next = index.prev, index.next
 
   if key == 'k' then
