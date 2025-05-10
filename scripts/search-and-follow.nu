@@ -155,3 +155,24 @@ def main [
     return $in
   }
 }
+
+# dev func for api testing
+def "main api" [] {
+  get-article {
+    lang: en
+    pageid: 24768
+    title: null
+    search: null
+  }
+  | to nuon
+  | save -f pandoc.nuon
+}
+
+# dev func for post-processing
+def "main parser" [] {
+  $env.config = ($env.config | update use_ansi_coloring false)
+
+  open pandoc.nuon
+  | parse-article
+  | save -f output.barfoo
+}
