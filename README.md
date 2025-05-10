@@ -36,3 +36,4 @@ Also, some of the pandoc output is malformed. I don't know what to do about that
 - [ ] use folds for infoboxes and images(?)
 - [ ] fix empty references, notes, citations
 - [ ] confirm that etymologies aren't cropped out
+- [ ] tables and conceallevel don't play nice; fix
