@@ -62,7 +62,7 @@ def get-article [opts: record] {
   }
 }
 
-def parse-article [] {
+def parse-article [--wrap] {
   update extract {
     to text | pandoc --from mediawiki --to markdown_phpextra
   }
@@ -137,18 +137,20 @@ def main [
 ] {
   mut opts = {
     lang: $lang
-    wrap: $wrap
     pageid: $pageid
     title: $title
     search: $search
   }
 
   if ($opts.lang | is-empty) { $opts.lang = "en" }
-  if ($opts.wrap | is-empty) { $opts.wrap = false }
 
   get-article $opts
   | if ($opts.search | is-empty) {
-    parse-article
+    if $wrap {
+      parse-article --wrap
+    } else {
+      parse-article
+    }
   } else {
     return $in
   }
