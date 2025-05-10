@@ -71,19 +71,13 @@ def parse-article [--wrap] {
   | update 1 { str replace "extract: " "" }
   # strip title tag
   | update 0 { str replace -r "title: (.*)" "# $1" | append "" } | flatten
-  # strip subheading tags
-  | each { str replace -r "(##.*) {#.*}" "$1" }
-  # strip wikilink markers
-  | each { str replace -m -a ' "wikilink"' '' }
-  # join paragraphs into single lines
-  | split list ""
   | each {
-    if not (
-      # ignore html tags
-      $in | str starts-with "<" | first) and not (
-      # ignore lists
-      $in | str starts-with "-   " | first) {
-      str join " "
+    # strip subheading tags
+    if ($in | str starts-with "#") {
+      str replace -r "(##.*) {#.*}" "$1"
+      # strip wikilink markers
+    } else if ($in | str contains ' "wikilink"') {
+      str replace -m -a ' "wikilink"' ''
     } else {
       return $in
     }
@@ -117,8 +111,7 @@ def parse-article [--wrap] {
       $in.0 | str starts-with "<figure>") or (
       $in.0 | str starts-with "<table>"
     ) {
-      str join "\n"
-      | pandoc --from html --to markdown
+      str join "\n" | pandoc --from html --to markdown
     } else if ($in.0 | str starts-with "<File:") {
       str join " "
     } else {
@@ -129,14 +122,18 @@ def parse-article [--wrap] {
   | each { append "" } | flatten
   # parse images cont.
   | each {
-    $in
-    # | str replace -r -a '<figure>.*src="(\S*)"[^>]*?title="([^"]*?)".*' "![$2](File:$1)"
-    # | str replace -r -a "%7C" '\|'
-    | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
-    # | str replace -r -a '<File:([^>]+)>'
-    | str replace -a "  <" " <"
+    if ($in | str contains "<File:") {
+      # # | str replace -r -a "%7C" '\|'
+      | str replace -r -a '<File:([^>]+)>([^\\]*)\\\|([^<]*)' "$3 <File:$1$2>\n"
+      # | str replace -r -a '<File:([^>]+)>'
+      | str replace -a "  <" " <"
+    } else {
+      return $in
+    }
   }
   | to text
+  # remove excess newlines
+  | str replace -a "\n\n\n" "\n\n"
   | tr -d '\000-\011\013\014\016-\037'          # Why is this here
 }
 
