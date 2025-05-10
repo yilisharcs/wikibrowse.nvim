@@ -1,8 +1,7 @@
 local win = require('wikibrowse.window')
 local plugin = vim.api.nvim__get_runtime({ 'lua/wikibrowse' }, false, {})[1]
 local root = vim.fn.fnamemodify(plugin, ":h:h")
-local sh_search = root .. '/scripts/wiki-search.nu'
-local sh_enter = root .. '/scripts/wiki-to-md.nu'
+local nuscript = root .. '/scripts/search-and-follow.nu'
 
 -- TODO: expose this as a config option
 local lang = 'en'
@@ -10,6 +9,7 @@ local lang = 'en'
 local M = {}
 
 M.setup = function()
+  -- Check if required binaries are installed
   if vim.fn.executable('nu') == 0 then
     vim.notify('nushell not found.', vim.log.levels.ERROR)
     return
@@ -24,6 +24,7 @@ M.setup = function()
   end, { nargs = '+' })
 end
 
+-- i found this on tj's video. it may not be necessary to have this here
 local state = {
   floating = {
     buf = -1,
@@ -74,8 +75,10 @@ M.wiki_search = function(query)
     end
 
     vim.system({
-      sh_search,
+      nuscript,
+      '--lang',
       lang,
+      '--search',
       query,
     }, { text = true }, on_exit)
   else
@@ -91,21 +94,12 @@ M.wiki_enter = function()
   local on_content_exit = function(obj)
     vim.schedule(function()
       if obj.code == 0 and obj.stdout then
-        -- local json_article = vim.json.decode(obj.stdout)
-        --
-        -- if json_article then
-        -- local title = json_article[1].title
-        -- local buf = win.create_article_buffer(title)
-
         local content_lines = vim.split(obj.stdout, '\n', { trimempty = true })
         local title = content_lines[1]:sub(3, -1) -- "# $title" notation
         local buf = win.create_article_buffer(title)
 
-        -- local content_lines = vim.split(json_article[1].extract, '\n', { trimempty = true })
         vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, content_lines)
-        -- vim.api.nvim_buf_set_lines(buf, 0, 0, false, { title })
-        -- vim.api.nvim_buf_set_lines(buf, 1, 1, false, { '' })
         vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
 
         vim.api.nvim_set_option_value('filetype', 'wikiarticle', { buf = buf })
@@ -121,9 +115,10 @@ M.wiki_enter = function()
   local pageid = string.match(index, 'pageid:(%d+)')
   if string.match(index, 'pageid:(%d+)') then
     vim.system({
-      sh_enter,
+      nuscript,
       '--lang',
       lang,
+      '--pageid',
       pageid,
     }, { text = true }, on_content_exit)
   else
