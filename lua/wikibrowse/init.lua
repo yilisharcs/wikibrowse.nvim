@@ -34,6 +34,8 @@ local state = {
 
 M.wiki_search = function(query)
   if not vim.api.nvim_win_is_valid(state.floating.win) then
+    -- width must be integral
+    -- TODO: how to use lua annotations
     state.floating = win.create_floating_window({ buf = state.floating.buf })
 
     vim.api.nvim_set_option_value('filetype', 'wikibrowser', { buf = state.floating.buf })
