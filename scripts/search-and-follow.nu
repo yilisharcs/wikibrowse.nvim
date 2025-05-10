@@ -88,18 +88,30 @@ def parse-article [--wrap] {
       return $in
     }
   }
-  # separate lines with newlines
-  | each { append "" } | flatten
-  # join lists into single lines
-  | to text | str replace -a "\n    " " "
-  # separate lists with newlines
-  | str replace -r -a "(-   .*)" "$1\n"
-  # remove excess newlines from previous command
-  | str replace -a "\n\n\n" "\n\n"
-  # remove excess newline at the end of file
-  | str replace -r -a "\n$" ""
+  # # join paragraphs into single lines
+  # | split list ""
+  # | each {
+  #   if not (
+  #     # ignore html tags
+  #     $in | str starts-with "<" | first) and not (
+  #     # ignore lists
+  #     $in | str starts-with "-   " | first) {
+  #     str join " "
+  #   } else {
+  #     return $in
+  #   }
+  # }
+  # # separate lines with newlines
+  # | each { append "" } | flatten
+  # # join lists into single lines
+  # | to text | str replace -a "\n    " " "
+  # # separate lists with newlines
+  # | str replace -r -a "(-   .*)" "$1\n"
+  # # remove excess newline at the end of file
+  # | str replace -r -a "\n$" ""
+  # | lines
   # parse image blocks
-  | lines | split list ""
+  | split list ""
   | each {
     if (
       $in.0 | str starts-with "<figure>") or (
