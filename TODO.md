@@ -28,3 +28,6 @@
 - [ ] Write a proper help file (`:h help-writing`)
     - [ ] Provided highlight groups go here
 - [ ] Fix wikiget interaction with `:bd`
+- [ ] Add demo images, gif, or video
+- [ ] Create a luarc json to make luals shut up about global pandoc variable
+- [ ] Remove dependency on Nushell (now depends on nvim 0.11.0)
