@@ -1,26 +1,20 @@
 local M = {}
 
 M.results_page = function(opts)
-        if not vim.api.nvim_buf_is_valid(opts.buf) then
-                opts.buf = vim.api.nvim_create_buf(false, true)
-        end
+        if not vim.api.nvim_buf_is_valid(opts.buf) then opts.buf = vim.api.nvim_create_buf(false, true) end
         local win_config = {
-                relative  = "editor",
-                width     = opts.width,
-                height    = opts.height,
-                row       = opts.row,
-                col       = opts.col,
+                relative = "editor",
+                width = opts.width,
+                height = opts.height,
+                row = opts.row,
+                col = opts.col,
                 -- TODO: Add keys below to plugin defaults
-                style     = "minimal",
-                border    = "rounded",
-                title     = " Wikibrowse ",
+                style = "minimal",
+                border = "rounded",
+                title = " Wikibrowse ",
                 title_pos = "center",
         }
-        local win = vim.api.nvim_open_win(
-                opts.buf,
-                true,
-                win_config
-        )
+        local win = vim.api.nvim_open_win(opts.buf, true, win_config)
         return { buf = opts.buf, win = win }
 end
 

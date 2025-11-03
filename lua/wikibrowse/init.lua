@@ -1,11 +1,10 @@
 local config = vim.g.wikibrowse
-local path   = vim.api.nvim__get_runtime({ "lua/wikibrowse" }, false, {})[1]
-local root   = vim.fs.dirname(vim.fs.dirname(path))
+local path = vim.api.nvim__get_runtime({ "lua/wikibrowse" }, false, {})[1]
+local root = vim.fs.dirname(vim.fs.dirname(path))
 local script = vim.fs.joinpath(root, "bin/wikibrowse.nu")
 
 local health = require("wikibrowse.health")
 local window = require("wikibrowse.window")
-
 
 local M = {}
 
@@ -14,24 +13,20 @@ local win_state = {
         floating = {
                 buf = -1,
                 win = -1,
-        }
+        },
 }
 
 function M.search(query)
         if not health.check() then return end
         if not vim.api.nvim_win_is_valid(win_state.floating.win) then
                 win_state.floating = window.results_page({
-                        width  = config.winopts.width,
+                        width = config.winopts.width,
                         height = config.winopts.height,
-                        col    = config.winopts.col,
-                        row    = config.winopts.row,
-                        buf    = win_state.floating.buf
+                        col = config.winopts.col,
+                        row = config.winopts.row,
+                        buf = win_state.floating.buf,
                 })
-                vim.api.nvim_set_option_value(
-                        "filetype",
-                        "wikibrowseresults",
-                        { buf = win_state.floating.buf }
-                )
+                vim.api.nvim_set_option_value("filetype", "wikibrowseresults", { buf = win_state.floating.buf })
                 vim.api.nvim_set_option_value(
                         "syntax",
                         "wikibrowseresults",
@@ -70,9 +65,7 @@ function M.jump(cmd)
                 local articles = { prev = {}, next = {} }
                 local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
                 for k, v in ipairs(lines) do
-                        if v:match("^##%s") then
-                                table.insert(articles.next, k)
-                        end
+                        if v:match("^##%s") then table.insert(articles.next, k) end
                 end
                 for i = #articles.next, 1, -1 do
                         table.insert(articles.prev, articles.next[i])
@@ -131,10 +124,7 @@ local function get_link_destination(row, col)
         local bufnr = vim.api.nvim_get_current_buf()
         local parser = vim.treesitter.get_parser(bufnr, "markdown_inline")
         if not parser then
-                vim.notify(
-                        "No `markdown_inline` parser found",
-                        vim.log.levels.ERROR,
-                        { title = "wikibrowse" })
+                vim.notify("No `markdown_inline` parser found", vim.log.levels.ERROR, { title = "wikibrowse" })
                 return
         end
 
@@ -179,10 +169,7 @@ function M.follow()
         local row, col = unpack(vim.api.nvim_win_get_cursor(0))
         local link_destination = get_link_destination(row - 1, col)
         if not link_destination then
-                vim.notify(
-                        "Not a URL.",
-                        vim.log.levels.WARN,
-                        { title = "wikibrowse" })
+                vim.notify("Not a URL.", vim.log.levels.WARN, { title = "wikibrowse" })
                 return
         end
 
