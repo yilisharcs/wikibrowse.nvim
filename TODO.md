@@ -8,7 +8,6 @@
     - [ ] Convert non-reflist superscript
 - [x] Find out what is the minimum version this plugin supports:
     * [x] Neovim: (Use `vim.version().minor` instead of `vim.fn.has`)
-    * [x] Nushell: Building with `v0.107.0`
     * [x] Pandoc: Building with `v3.1.11.1`
 - [ ] Opt-in/out UI elements:
     * [ ] Portals

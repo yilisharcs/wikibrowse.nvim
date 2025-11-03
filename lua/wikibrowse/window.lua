@@ -1,24 +1,33 @@
 local M = {}
 
-M.results_page = function(opts)
-        if not vim.api.nvim_buf_is_valid(opts.buf) then opts.buf = vim.api.nvim_create_buf(false, true) end
-        local win_config = {
-                relative = "editor",
-                width = opts.width,
-                height = opts.height,
-                row = opts.row,
-                col = opts.col,
-                -- TODO: Add keys below to plugin defaults
-                style = "minimal",
-                border = "rounded",
-                title = " Wikibrowse ",
-                title_pos = "center",
-        }
-        local win = vim.api.nvim_open_win(opts.buf, true, win_config)
-        return { buf = opts.buf, win = win }
+local float = {
+        buf = -1,
+        win = -1,
+}
+
+function M.results()
+        local winopts = vim.g.wikibrowse.winopts
+        if not vim.api.nvim_win_is_valid(float.win) then
+                if not vim.api.nvim_buf_is_valid(float.buf) then float.buf = vim.api.nvim_create_buf(false, true) end
+                local config = {
+                        relative = "editor",
+                        width = winopts.width,
+                        height = winopts.height,
+                        row = winopts.row,
+                        col = winopts.col,
+                        style = "minimal",
+                        border = "rounded",
+                        title = " wikibrowse ",
+                        title_pos = "center",
+                }
+                float.win = vim.api.nvim_open_win(float.buf, true, config)
+                vim.api.nvim_set_option_value("filetype", "wikibrowseresults", { buf = float.buf })
+                vim.api.nvim_set_option_value("syntax", "wikibrowseresults", { buf = float.buf, scope = "local" })
+        end
+        return float.buf
 end
 
-M.article_buffer = function(page)
+function M.article(page)
         local buflist = vim.api.nvim_list_bufs()
         for _, bufnr in ipairs(buflist) do
                 if vim.api.nvim_buf_is_valid(bufnr) then
