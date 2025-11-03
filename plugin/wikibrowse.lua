@@ -1,18 +1,9 @@
 if vim.g.loaded_wikibrowse == 1 then return end
 vim.g.loaded_wikibrowse = 1
 
-vim.api.nvim_create_user_command("Wikibrowse", function(args) require("wikibrowse").search(args.args) end, {
+vim.api.nvim_create_user_command("Wikibrowse", function(args) require("wikibrowse").search(args.fargs) end, {
         desc = "Search Wikipedia articles",
-        nargs = "+",
-})
-
-vim.treesitter.language.register("markdown", {
-        "wikibrowsearticle",
-        "wikibrowseresults",
-})
-vim.treesitter.language.register("markdown_inline", {
-        "wikibrowsearticle",
-        "wikibrowseresults",
+        nargs = "*",
 })
 
 local width = math.floor(vim.o.columns * 0.79)
