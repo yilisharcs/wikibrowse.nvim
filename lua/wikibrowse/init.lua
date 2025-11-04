@@ -5,23 +5,37 @@ local M = {}
 
 function M.search(fargs)
         coroutine.resume(coroutine.create(function()
-                local buf = window.results()
-                local lines = fetch.titles(fargs)
-                vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
-                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-                vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
-                vim.api.nvim_win_set_cursor(0, { 3, 0 })
+                local ok, err = pcall(function()
+                        local buf = window.results()
+                        local lines = fetch.titles(fargs)
+                        if lines then
+                                vim.api.nvim_schedule(function()
+                                        vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
+                                        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+                                        vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+                                        vim.api.nvim_win_set_cursor(0, { 3, 0 })
+                                end)
+                        end
+                end)
+                if not ok then vim.notify("search failed: " .. err, vim.log.levels.ERROR) end
         end))
 end
 
 local function wikiget(page)
         coroutine.resume(coroutine.create(function()
-                local buf = window.article(page)
-                if not buf then return end
+                local ok, err = pcall(function()
+                        local buf = window.article(page)
+                        if not buf then return end
 
-                local content = fetch.content(page)
-                local lines = vim.split(content.parse.text, "\n", { trimempty = true })
-                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+                        local content = fetch.content(page)
+                        if content and content.parse then
+                                local lines = vim.split(content.parse.text, "\n", { trimempty = true })
+                                vim.api.nvim_schedule(function()
+                                        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+                                end)
+                        end
+                end)
+                if not ok then vim.notify("wikiget failed: " .. err, vim.log.levels.ERROR) end
         end))
 end
 
