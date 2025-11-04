@@ -4,21 +4,25 @@ local window = require("wikibrowse.window")
 local M = {}
 
 function M.search(fargs)
-        local buf = window.results()
-        local lines = fetch.titles(fargs)
-        vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-        vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
-        vim.api.nvim_win_set_cursor(0, { 3, 0 })
+        coroutine.resume(coroutine.create(function()
+                local buf = window.results()
+                local lines = fetch.titles(fargs)
+                vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+                vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+                vim.api.nvim_win_set_cursor(0, { 3, 0 })
+        end))
 end
 
 local function wikiget(page)
-        local buf = window.article(page)
-        if not buf then return end
+        coroutine.resume(coroutine.create(function()
+                local buf = window.article(page)
+                if not buf then return end
 
-        local content = fetch.content(page)
-        local lines = vim.split(content.parse.text, "\n", { trimempty = true })
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+                local content = fetch.content(page)
+                local lines = vim.split(content.parse.text, "\n", { trimempty = true })
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        end))
 end
 
 function M.enter()

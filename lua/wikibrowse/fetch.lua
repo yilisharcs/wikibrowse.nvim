@@ -3,16 +3,15 @@ local rtp = vim.api.nvim_get_runtime_file("lua/wikibrowse/_pandoc", false)[1]
 local M = {}
 
 local function request(url)
-        local response
+        local co = coroutine.running()
         vim.net.request(url, {}, function(err, resp)
                 if err then
-                        response = err
+                        coroutine.resume(co, nil, err)
                 else
-                        response = resp
+                        coroutine.resume(co, resp)
                 end
         end)
-        if not vim.wait(5000, function() return response ~= nil end) then error("Request took too long.") end
-        return response
+        return coroutine.yield()
 end
 
 ---@param str string[]
@@ -40,8 +39,12 @@ function M.titles(str)
                 query,
         })
 
-        local req = request(url)
-        local json = vim.json.decode(req.body)
+        local resp, err = request(url)
+        if err then
+                vim.notify("request failed: " .. err, vim.log.levels.ERROR)
+                return
+        end
+        local json = vim.json.decode(resp.body)
         if json.error then error(json.error.info) end
 
         -- Build the results page content
@@ -78,8 +81,12 @@ function M.content(page)
                 page,
         })
 
-        local req = request(url)
-        local json = vim.json.decode(req.body)
+        local resp, err = request(url)
+        if err then
+                vim.notify("request failed: " .. err, vim.log.levels.ERROR)
+                return
+        end
+        local json = vim.json.decode(resp.body)
         if not json.parse then error(json.error.info) end
 
         local pflags = {
@@ -98,7 +105,10 @@ function M.content(page)
                 -- ("--lua-filter=%s/_identify.lua"):format(rtp),
         }
 
-        local obj = vim.system(pflags, { stdin = json.parse.text }):wait()
+        local co = coroutine.running()
+        vim.system(pflags, { stdin = json.parse.text }, function(obj) coroutine.resume(co, obj) end)
+        local obj = coroutine.yield()
+
         json.parse.text = obj.stdout
         return json
 end
