@@ -24,8 +24,9 @@ end
 local function wikiget(page)
         coroutine.resume(coroutine.create(function()
                 local ok, err = pcall(function()
-                        local buf = window.article(page)
-                        if not buf then return end
+                        local buf, exists = window.article(page)
+                        vim.api.nvim_set_current_buf(buf)
+                        if exists then return end
 
                         local content = fetch.content(page)
                         if content and content.parse then
@@ -33,7 +34,8 @@ local function wikiget(page)
                                 vim.schedule(function() vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines) end)
                         end
                 end)
-                if not ok then vim.notify("wikiget failed: " .. err, vim.log.levels.ERROR) end
+
+                if not ok then vim.notify("wikiget failed: " .. err, vim.log.levels.ERROR, { title = "wikibrowse" }) end
         end))
 end
 
@@ -47,7 +49,7 @@ function M.enter()
                 return
         end
         vim.api.nvim_win_close(0, true)
-        wikiget(page)
+        vim.schedule(function() wikiget(page) end)
 end
 
 local function get_link_destination(row, col)

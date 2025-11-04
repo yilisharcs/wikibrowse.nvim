@@ -33,18 +33,14 @@ function M.article(page)
                 if vim.api.nvim_buf_is_valid(bufnr) then
                         local bufname = vim.api.nvim_buf_get_name(bufnr)
                         bufname = bufname:gsub("^wikibrowse://", "")
-                        if bufname == page then
-                                vim.api.nvim_set_current_buf(bufnr)
-                                return
-                        end
+                        if bufname == page then return bufnr, true end
                 end
         end
 
         local buf = vim.api.nvim_create_buf(false, true)
-        vim.api.nvim_set_current_buf(buf)
         vim.bo[buf].filetype = "wikibrowsearticle"
         vim.api.nvim_buf_set_name(buf, "wikibrowse://" .. page)
-        return buf
+        return buf, false
 end
 
 return M
