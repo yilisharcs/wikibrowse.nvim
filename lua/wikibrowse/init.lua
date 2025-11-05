@@ -10,14 +10,33 @@ function M.search(fargs)
                         local lines = fetch.titles(fargs)
                         if lines then
                                 vim.schedule(function()
-                                        vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
-                                        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-                                        vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+                                        vim.api.nvim_set_option_value(
+                                                "modifiable",
+                                                true,
+                                                { buf = buf }
+                                        )
+                                        vim.api.nvim_buf_set_lines(
+                                                buf,
+                                                0,
+                                                -1,
+                                                false,
+                                                lines
+                                        )
+                                        vim.api.nvim_set_option_value(
+                                                "modifiable",
+                                                false,
+                                                { buf = buf }
+                                        )
                                         vim.api.nvim_win_set_cursor(0, { 3, 0 })
                                 end)
                         end
                 end)
-                if not ok then vim.notify("search failed: " .. err, vim.log.levels.ERROR) end
+                if not ok then
+                        vim.notify(
+                                "search failed: " .. err,
+                                vim.log.levels.ERROR
+                        )
+                end
         end))
 end
 
@@ -30,12 +49,32 @@ local function wikiget(page)
 
                         local content = fetch.content(page)
                         if content and content.parse then
-                                local lines = vim.split(content.parse.text, "\n", { trimempty = true })
-                                vim.schedule(function() vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines) end)
+                                local lines = vim.split(
+                                        content.parse.text,
+                                        "\n",
+                                        { trimempty = true }
+                                )
+                                vim.schedule(
+                                        function()
+                                                vim.api.nvim_buf_set_lines(
+                                                        buf,
+                                                        0,
+                                                        -1,
+                                                        false,
+                                                        lines
+                                                )
+                                        end
+                                )
                         end
                 end)
 
-                if not ok then vim.notify("wikiget failed: " .. err, vim.log.levels.ERROR, { title = "wikibrowse" }) end
+                if not ok then
+                        vim.notify(
+                                "wikiget failed: " .. err,
+                                vim.log.levels.ERROR,
+                                { title = "wikibrowse" }
+                        )
+                end
         end))
 end
 
@@ -45,7 +84,10 @@ function M.enter()
         local index = vim.api.nvim_buf_get_lines(buf, row - 1, row, false)[1]
         local page = index:match("@page:(%S+)")
         if page == nil then
-                vim.notify("Article title not found on this line.", vim.log.levels.WARN)
+                vim.notify(
+                        "Article title not found on this line.",
+                        vim.log.levels.WARN
+                )
                 return
         end
         vim.api.nvim_win_close(0, true)
@@ -56,23 +98,41 @@ local function get_link_destination(row, col)
         local bufnr = vim.api.nvim_get_current_buf()
         local parser = vim.treesitter.get_parser(bufnr, "markdown_inline")
         if not parser then
-                vim.notify("No `markdown_inline` parser found", vim.log.levels.ERROR, { title = "wikibrowse" })
+                vim.notify(
+                        "No `markdown_inline` parser found",
+                        vim.log.levels.ERROR,
+                        { title = "wikibrowse" }
+                )
                 return
         end
 
         local inline_root = parser:parse()[1]:root()
-        local node_at_cursor = inline_root:named_descendant_for_range(row, col, row, col)
+        local node_at_cursor =
+                inline_root:named_descendant_for_range(row, col, row, col)
         if not node_at_cursor then return end
 
         if node_at_cursor:type() == "link_destination" then
-                return vim.split(vim.treesitter.get_node_text(node_at_cursor, bufnr), "\\n")[1]
+                return vim.split(
+                        vim.treesitter.get_node_text(node_at_cursor, bufnr),
+                        "\\n"
+                )[1]
         elseif node_at_cursor:type() == "link_text" then
                 local parent = node_at_cursor:parent()
                 if parent and parent:type() == "inline_link" then
                         for i = 0, parent:named_child_count() - 1 do
                                 local child = parent:named_child(i)
-                                if child and child:type() == "link_destination" then
-                                        return vim.split(vim.treesitter.get_node_text(child, bufnr), "\\n")[1]
+                                if
+                                        child
+                                        and child:type()
+                                                == "link_destination"
+                                then
+                                        return vim.split(
+                                                vim.treesitter.get_node_text(
+                                                        child,
+                                                        bufnr
+                                                ),
+                                                "\\n"
+                                        )[1]
                                 end
                         end
                 end
@@ -80,7 +140,13 @@ local function get_link_destination(row, col)
                 for i = 0, node_at_cursor:named_child_count() - 1 do
                         local child = node_at_cursor:named_child(i)
                         if child and child:type() == "link_destination" then
-                                return vim.split(vim.treesitter.get_node_text(child, bufnr), "\\n")[1]
+                                return vim.split(
+                                        vim.treesitter.get_node_text(
+                                                child,
+                                                bufnr
+                                        ),
+                                        "\\n"
+                                )[1]
                         end
                 end
         end
@@ -101,7 +167,11 @@ function M.follow()
         local row, col = unpack(vim.api.nvim_win_get_cursor(0))
         local link_destination = get_link_destination(row - 1, col)
         if not link_destination then
-                vim.notify("Not a URL.", vim.log.levels.WARN, { title = "wikibrowse" })
+                vim.notify(
+                        "Not a URL.",
+                        vim.log.levels.WARN,
+                        { title = "wikibrowse" }
+                )
                 return
         end
 
@@ -126,7 +196,9 @@ function M.jump(cmd)
                 local articles = { prev = {}, next = {} }
                 local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
                 for k, v in ipairs(lines) do
-                        if v:match("^##%s") then table.insert(articles.next, k) end
+                        if v:match("^##%s") then
+                                table.insert(articles.next, k)
+                        end
                 end
                 for i = #articles.next, 1, -1 do
                         table.insert(articles.prev, articles.next[i])

@@ -8,7 +8,9 @@ local float = {
 function M.results()
         local winopts = vim.g.wikibrowse.winopts
         if not vim.api.nvim_win_is_valid(float.win) then
-                if not vim.api.nvim_buf_is_valid(float.buf) then float.buf = vim.api.nvim_create_buf(false, true) end
+                if not vim.api.nvim_buf_is_valid(float.buf) then
+                        float.buf = vim.api.nvim_create_buf(false, true)
+                end
                 local config = {
                         relative = "editor",
                         width = winopts.width,
@@ -21,8 +23,16 @@ function M.results()
                         title_pos = "center",
                 }
                 float.win = vim.api.nvim_open_win(float.buf, true, config)
-                vim.api.nvim_set_option_value("filetype", "wikibrowseresults", { buf = float.buf })
-                vim.api.nvim_set_option_value("syntax", "wikibrowseresults", { buf = float.buf, scope = "local" })
+                vim.api.nvim_set_option_value(
+                        "filetype",
+                        "wikibrowseresults",
+                        { buf = float.buf }
+                )
+                vim.api.nvim_set_option_value(
+                        "syntax",
+                        "wikibrowseresults",
+                        { buf = float.buf, scope = "local" }
+                )
         end
         return float.buf
 end

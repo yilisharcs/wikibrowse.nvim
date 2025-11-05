@@ -3,16 +3,12 @@ local function has_class(elem, classes)
         classes = type(classes) == "table" and classes or { classes }
         for _, class in ipairs(classes) do
                 for _, item in ipairs(elem.classes) do
-                        if item == class then
-                                return true
-                        end
+                        if item == class then return true end
                 end
         end
         return false
 end
 
 function Span(elem)
-        if has_class(elem, "mw-editsection") then
-                return {}
-        end
+        if has_class(elem, "mw-editsection") then return {} end
 end

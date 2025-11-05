@@ -1,10 +1,14 @@
 if vim.g.loaded_wikibrowse == 1 then return end
 vim.g.loaded_wikibrowse = 1
 
-vim.api.nvim_create_user_command("Wikibrowse", function(args) require("wikibrowse").search(args.fargs) end, {
-        desc = "Search Wikipedia articles",
-        nargs = "*",
-})
+vim.api.nvim_create_user_command(
+        "Wikibrowse",
+        function(args) require("wikibrowse").search(args.fargs) end,
+        {
+                desc = "Search Wikipedia articles",
+                nargs = "*",
+        }
+)
 
 local width = math.floor(vim.o.columns * 0.79)
 local height = math.floor(vim.o.lines * 0.63)
@@ -22,4 +26,5 @@ local DEFAULTS = {
         },
 }
 
-vim.g.wikibrowse = vim.tbl_deep_extend("force", DEFAULTS, vim.g.wikibrowse or {})
+vim.g.wikibrowse =
+        vim.tbl_deep_extend("force", DEFAULTS, vim.g.wikibrowse or {})

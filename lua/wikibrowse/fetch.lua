@@ -53,7 +53,10 @@ function M.titles(str)
         table.insert(lines, "")
 
         local pages = json.query.pages
-        table.sort(pages, function(a, b) return (a.index or 0) < (b.index or 0) end)
+        table.sort(
+                pages,
+                function(a, b) return (a.index or 0) < (b.index or 0) end
+        )
 
         for _, item in ipairs(pages) do
                 local prefix = "^https://%a+%.wikipedia%.org/wiki/"
@@ -106,7 +109,11 @@ function M.content(page)
         }
 
         local co = coroutine.running()
-        vim.system(pflags, { stdin = json.parse.text }, function(obj) coroutine.resume(co, obj) end)
+        vim.system(
+                pflags,
+                { stdin = json.parse.text },
+                function(obj) coroutine.resume(co, obj) end
+        )
         local obj = coroutine.yield()
 
         json.parse.text = obj.stdout
