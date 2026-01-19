@@ -6,7 +6,7 @@ vim.api.nvim_create_user_command(
         function(args) require("wikibrowse").search(args.fargs) end,
         {
                 desc = "Search Wikipedia articles",
-                nargs = "*",
+                nargs = "+",
         }
 )
 
